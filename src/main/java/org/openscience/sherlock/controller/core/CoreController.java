@@ -24,16 +24,19 @@
 
 package org.openscience.sherlock.controller.core;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.openscience.sherlock.controller.DereplicationController;
 import org.openscience.sherlock.controller.DetectionController;
 import org.openscience.sherlock.controller.ElucidationController;
 import org.openscience.sherlock.controller.JobController;
 import org.openscience.sherlock.controller.RetrievalController;
+import org.openscience.sherlock.controller.SystemStatusController;
 import org.openscience.sherlock.model.exchange.RequestData;
 import org.openscience.sherlock.model.exchange.RequestResult;
 import org.openscience.sherlock.utils.elucidation.job.JobSnapshot;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +47,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import reactor.core.publisher.Mono;
 
 @Tag(name = "Core Controller", description = "Core functionalities of the Sherlock backend services.")
 @RestController
@@ -53,39 +57,59 @@ public class CoreController {
         @Value("${sherlock.version}")
         private String sherlockVersion;
 
+        @Value("${sherlock.url}")
+        private String sherlockUrl;
+
+        @Value("${springdoc.api-docs.path}")
+        private String springdocApiDocsPath;
+
+        @Value("${springdoc.swagger-ui.path}")
+        private String springdocSwaggerUiPath;
+
         private final DereplicationController dereplicationController;
         private final ElucidationController elucidationController;
         private final DetectionController detectionController;
         private final RetrievalController retrievalController;
         private final JobController jobController;
+        private final SystemStatusController systemStatusController;
 
         public CoreController(final DereplicationController dereplicationController,
                         final ElucidationController elucidationController,
                         final DetectionController detectionController,
-                        final RetrievalController retrievalController, final JobController jobController) {
+                        final RetrievalController retrievalController, final JobController jobController,
+                        final SystemStatusController systemStatusController) {
                 this.dereplicationController = dereplicationController;
                 this.elucidationController = elucidationController;
                 this.detectionController = detectionController;
                 this.retrievalController = retrievalController;
                 this.jobController = jobController;
+                this.systemStatusController = systemStatusController;
         }
 
-        @Operation(summary = "Get service information", description = "Returns a short welcome message with the running Sherlock version and repository reference.")
+        @Operation(summary = "Get service information and backend status", description = "Returns a short welcome message with the running Sherlock version and repository reference, together with the liveness of each connected database (MongoDB dataset, result, statistics and PostgreSQL).")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Service information returned successfully"),
-                        @ApiResponse(responseCode = "401", description = "Authentication is required")
+                        @ApiResponse(responseCode = "200", description = "All components are reachable"),
+                        @ApiResponse(responseCode = "401", description = "Authentication is required"),
+                        @ApiResponse(responseCode = "503", description = "At least one component is unreachable")
         })
         @GetMapping(value = "/", produces = "application/json")
-        public ResponseEntity<String> root() {
+        public Mono<ResponseEntity<Map<String, Object>>> root() {
+                return this.systemStatusController.status()
+                                .map(statusResponse -> {
+                                        final Map<String, Object> body = new LinkedHashMap<>();
+                                        body.put("message", "Welcome to the Sherlock backend services!");
+                                        body.put("version", sherlockVersion);
+                                        body.put("github", "https://github.com/michaelwenk/sherlock");
+                                        body.put("openApi", sherlockUrl + springdocApiDocsPath);
+                                        body.put("swaggerUi", sherlockUrl + springdocSwaggerUiPath);
 
-                return new ResponseEntity<>("Welcome to the Sherlock backend services!"
-                                + "\n\n"
-                                + "Version: "
-                                + sherlockVersion
-                                + "\n"
-                                + "GitHub: "
-                                + "https://github.com/michaelwenk/sherlock"
-                                + "\n", HttpStatus.OK);
+                                        final Map<String, Object> statusBody = statusResponse.getBody();
+                                        if (statusBody != null) {
+                                                body.putAll(statusBody);
+                                        }
+
+                                        return new ResponseEntity<>(body, statusResponse.getStatusCode());
+                                });
         }
 
         @Operation(summary = "Start a dereplication query", description = "Delegates the request payload to the dereplication workflow.")
@@ -149,8 +173,8 @@ public class CoreController {
                         @ApiResponse(responseCode = "403", description = "Invalid request password", content = @Content(mediaType = "application/json", schema = @Schema(implementation = JobSnapshot.class))),
                         @ApiResponse(responseCode = "404", description = "No job found for the provided request ID", content = @Content(mediaType = "application/json", schema = @Schema(implementation = JobSnapshot.class)))
         })
-        @GetMapping("/status")
-        public ResponseEntity<JobSnapshot> getStatus(
+        @GetMapping("/jobStatus")
+        public ResponseEntity<JobSnapshot> getJobStatus(
                         @Parameter(description = "Request ID returned when the asynchronous job was created.", required = true) @RequestParam String requestId,
                         @Parameter(description = "Password that was returned when the asynchronous job was created.", required = true) @RequestParam String requestPassword) {
                 return this.jobController.getJobSnapshot(requestId, requestPassword);

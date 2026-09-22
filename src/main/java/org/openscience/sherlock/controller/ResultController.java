@@ -135,6 +135,28 @@ public class ResultController {
                 .is(id)));
     }
 
+    @Operation(summary = "Delete a result by request ID", description = "Deletes the stored result record whose filename matches the given Sherlock request ID.")
+    @DeleteMapping(value = "/deleteByRequestId")
+    public Mono<ResponseEntity<Void>> deleteByRequestId(
+            @Parameter(description = "Request ID returned when the asynchronous job was created.", example = "2d9c2d6f-6d4f-4d9f-94b9-13c9a4db9fd2", required = true) @RequestParam final String requestId,
+            @Parameter(description = "Password that was returned when the asynchronous job was created.", example = "3fQ9xv0A7kLm2PzR", required = false) @RequestParam(required = false) final String requestPassword) {
+        if (this.passwordCheckEnabled && (requestPassword == null || requestPassword.isBlank())) {
+            return Mono.just(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+        }
+
+        return this.findByRequestId(requestId)
+                .flatMap(resultRecord -> {
+                    if (this.passwordCheckEnabled
+                            && !RequestPasswordUtils.matches(requestPassword, resultRecord.getRequestPasswordHash())) {
+                        return Mono.just(new ResponseEntity<Void>(HttpStatus.FORBIDDEN));
+                    }
+                    return this.reactiveGridFsTemplate
+                            .delete(new Query(Criteria.where("filename").is(requestId)))
+                            .thenReturn(new ResponseEntity<Void>(HttpStatus.NO_CONTENT));
+                })
+                .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
     @Operation(summary = "Delete all results", description = "Removes every stored result record from GridFS.")
     @DeleteMapping(value = "/deleteAll")
     public Mono<Void> deleteAll() {
