@@ -1,4 +1,4 @@
-# This workflow will perform following actions when code is pushed to the restruture branch:
+# This workflow will perform following actions when code is pushed to the development branch:
 # - Run tests and linting checks (can be enabled via needs: test_and_lint)
 # - Build and push sherlock Docker image with layer caching for faster builds
 # - Push images to Docker Hub under namespace nfdi4chem with latest tag
@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
     inputs:
       confirm:
-        description: "Type 'DEPLOY' to confirm production deployment"
+        description: "Type 'DEPLOY' to confirm development deployment"
         required: true
         type: string
 
@@ -34,6 +34,7 @@ env:
 
 jobs:
   build_and_push_to_registry:
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.confirm == 'DEPLOY' }}
     name: Build and Push Docker image to Docker Hub
     runs-on: ubuntu-latest
 
@@ -41,6 +42,16 @@ jobs:
       # Clone repository code to runner
       - name: Check out the repo
         uses: actions/checkout@v4
+
+      # Fetch PyLSD and stage it to right folder
+      - name: Fetch PyLSD
+        run: |
+          curl -sL -o pylsd.tar.gz "https://raw.githubusercontent.com/nuzillard/PyLSD/4db027118acf3d9c77d3a5f8dc9ce51dd3cbd468/pylsd-linux-a8.tar.gz"
+          tar -xzf pylsd.tar.gz -C data/lsd
+          mv data/lsd/PyLSD-a8 data/lsd/PyLSD
+          cp data/lsd/PyLSD_Variant_mod/defaults.py data/lsd/PyLSD/Variant/defaults.py
+          cp data/lsd/PyLSD_Variant_mod/lsd.py data/lsd/PyLSD/Variant/lsd.py
+          rm pylsd.tar.gz
 
       # Enable multi-architecture builds via QEMU emulation
       - name: Set up QEMU
