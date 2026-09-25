@@ -31,7 +31,7 @@ NOTE: It is recommended to set the accessible RAM to 8 GB or higher and the numb
 
 Clone this repository and change the directory:
 
-    git clone https://github.com/michaelwenk/sherlock.git && \
+    git clone https://github.com/NFDI4Chem/sherlock.git && \
     cd sherlock && \
     cp env.dist .env
 
