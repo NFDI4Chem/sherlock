@@ -30,7 +30,7 @@ permissions:
 env:
   SHERLOCK_REPOSITORY_NAME: sherlock
   REPOSITORY_NAMESPACE: nfdi4chem
-  RELEASE_TAG: latest
+  RELEASE_TAG: dev
 
 jobs:
   build_and_push_to_registry:
