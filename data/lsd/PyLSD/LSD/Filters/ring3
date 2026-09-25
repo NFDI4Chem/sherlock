@@ -1,0 +1,8 @@
+; a generic 3-membered ring
+SSTR S1 A (1 2 3) (0 1 2)
+SSTR S2 A (1 2 3) (0 1 2)
+SSTR S3 A (1 2 3) (0 1 2)
+LINK S1 S2
+LINK S2 S3
+LINK S1 S3
+

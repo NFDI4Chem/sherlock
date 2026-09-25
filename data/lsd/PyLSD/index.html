@@ -1,0 +1,327 @@
+<html>
+<head>
+<title>PyLSD</title>
+</head>
+<body>
+<center>
+<h1>
+PyLSD
+</h1>
+</center>
+<h2>
+What is PyLSD?
+</h2>
+<p>
+PyLSD is a layer over the LSD software.
+The reader of this page should already be familiar with <a href="https://nuzillard.github.io/LSD/">LSD</a>.
+PyLSD processes enhanced LSD input files, and thus solves structure elucidation problems
+LSD cannot solve.
+The enhancements allow one to deal with compounds for which the exact molecular
+formula is not precisely known, for which some atoms have an unknown hybridization state
+and/or an unknown multiplicity (number of attached hydrogen atoms).
+In addition, the solutions can be ranked by decreasing order of likelihood,
+according to the matching of experimental <SUP>13</SUP>C NMR chemical shifts with 
+predicted ones.
+</p>
+<p>
+An ambiguous (or complex) LSD problem, that include a variable molecular formula (VMF) and
+variable status atoms (VSA), is converted by PyLSD into a set of unambiguous (or simple) LSD problem files
+that can be separately processed by the LSD software.
+The solutions files are then grouped together for ranking using the <SUP>13</SUP>C chemical shift prediction by
+<a href="http://nmrshiftdb.nmr.uni-koeln.de/">nmrshiftdb2</a>, structure diagam generation,
+and display.
+</p>
+<p>
+PyLSD in written in Python language.
+</p>
+
+<p>
+Find pyLSD on <a href="https://www.linkedin.com/groups/4490407/" target="_blank">
+<img src="Images/linkedin.png" width=30 align=middle alt="linkedin" title="LSD software" /> </a>
+</p>
+
+<p>
+Find pyLSD on <a href="https://nuzillard.github.io/PyLSD/">GitHub</a>
+</p>
+
+<h2>
+License
+</h2>
+<p>
+PyLSD is a
+<a HREF = "http://www.gnu.org/philosophy/free-sw.html">
+free software</A> that is distributed under the
+<a HREF = "license.txt">GPL license</a>.
+</p>
+
+<h2>
+Version
+</h2>
+<p>
+This is version alpha-8.
+PyLSD-a8 is functional but still needs many improvements.
+</p>
+
+<h2>
+History
+</h2>
+<p>
+Here is the <a HREF = "HISTORY.html">History file</a>
+</p>
+
+<h2>
+Installation
+</h2>
+<p>
+Click <a href="INSTALL.html">here</a> for installation and testing instructions.
+This page also indicates where to put the PyLSD command files and how to run them.
+</p>
+
+<h2>
+Running pyLSD
+</h2>
+<ul>
+<li>Create or copy the PyLSD data file (mypylsdfile.lsd, for example) in the Variant directory</li>
+<li>Open a command interpreter and set the current directory to the Variant directory</li>
+<li>Enter the <code>python lsd.py mypylsdfile.lsd</code> command</li>
+</ul>
+<p>
+<a href="INSTALL.html">INSTALL.html</a> indicates which intermediate files are created
+and provides advices for troubleshooting (see the First-aid section).
+The solution file, in SDF format is named mypylsdfile_0.sdf, and is created in the LSD/Data directory.
+It can be used in order to improve the 2D structure depictions outlsd generates.
+</p>
+
+<h2>
+Turning an LSD data file into a pyLSD data file
+</h2>
+<p>
+An LSD data file is not (yet) a valid PyLSD data file.
+The conversion can be achieved by adding two new commands: <code>FORM</code> and <code>PIEC</code>.
+</p>
+<p>
+The <code>FORM</code> command indicates the molecular formula of the unknown compound.
+It has a single argument, a character string between double quotes,
+such as in <code>FORM "C 21 H 22 N 2 O 2"</code> for strychnine.
+All formula parts, elements symbols and coefficients are separated by spaces.
+</p>
+<p>
+The <code>PIEC</code> command is a story in itself that is telled later, in a separate section.
+It takes a single integer as parameter that fixes an upper limit to the number of connected parts in
+the problem solutions (well, roughly...).
+Adding a <code>PIEC 1</code> command to a LSD data file achieves what the user
+generally wants to do.
+</p>
+<p>
+Solution ranking by comparison between experimental and predicted chemical shift values
+requires to preserve all solutions produced by LSD the writing of either a <code>DUPL 1</code>
+or a <code>DUPL 0</code> to the input file to pyLSD.
+</p>
+<p>
+The <code>SHIX</code> command has no effect in LSD and may be considered there as
+documentation for chemical shift values. The <code>SHIX</code> command in pyLSD is also used
+to determine whether two atoms with identical status are equivalent or not.
+Two atoms with identical status and different chemical shifts are not considered as equivalent.
+Even though solution ranking is not considered as significant for the user, the 
+<code>SHIX</code> commands are necessary for a correct production of a solution set by pyLSD.
+</p>
+<p>
+The pinene.lsd LSD data file has been adapted to pyLSD and is available for testing.
+Please notice that the location of the substructure files have been updated because
+the Filters directory is not any more in the current directory but in ../LSD/.
+Running "python lsd.py pinene.lsd" from the command line with "Variant" as current directory
+should display the structure of pinene.
+</p>
+
+<h2>
+PyLSD specific commands
+</h2>
+<h3>
+<code>FORM</code>
+</h3>
+<p>
+Molecular FORMula
+</p>
+<p>
+The string argument of the <code>FORM</code> command
+contains chemical element symbols that are followed by an indication
+about the number of occurences of these elements in the molecule.
+The number of occurences may be either an integer or a range in the form <code>n-m</code>,
+in which n and m are two integers (n &lt; m).
+If at least one number of occurences is a range, then a <code>MOMA</code> is required.
+</p>
+<p>
+Example: <code>FORM "C 1 H 3 N 1 O 2-3"</code>, taken from the mixture.lsd PyLSD data file.
+This molecular formula fits with nitromethane, methyl nitrite and nitromethane.
+</p>
+
+<h3>
+<code>MOMA</code>
+</h3>
+<p>
+MOlecular MAss
+</p>
+<p>
+The argument of the <code>MOMA</code> command indicates a molecular mass or
+a molecular mass range. A molecular mass is the sum of the atomic masses of the atoms
+that constitute a molecule, expressed in atomic mass units (amu),
+The atomic masses are integer values (number of nucleons in
+the most abundant isotope) according to the first line of the paragraphs in
+Variant/statuslist.txt. 
+</p>
+<p>
+Example: <code>MOMA 1-1000</code>, taken from the mixture.lsd PyLSD data file.
+The molecular mass must be between 1 and 1000 amu, thus meaning that no constraint on mass is imposed.
+</p>
+
+<h3>
+<code>MULT</code>
+</h3>
+<p>
+MULTiplicity
+</p>
+<p>
+This is an extension of the LSD <code>MULT</code> command.
+For chemical element symbols, LSD supports usual symbols for usual valence
+(S for divalent sulfur) and usual symbols followed by unusual valence
+(S4 for tetravalent sulfur). PyLSD also supports alternative valences but the
+usual valence must explicitely be given (S24 for di- and tetravalent sulfur).
+For hybridization state, multiplicity and electric charge, alternative values
+are given, as usual, between parenthesis and are separated by blanks.
+</p>
+<p>
+Example: <code>MULT 20 N35 (2 3) (0 1 2) (0 1)</code>, defines atom 20
+as a nitrogen atom either tri- or pentavalent, sp2 or sp3, bound to 0, 1 or 2
+hydrogen atoms, with either a 0 or a +1 electric charge. 
+</p>
+
+<h3>
+<code>ELEC</code>
+</h3>
+<p>
+Molecular ELECtric charge
+</p>
+<p>
+The <code>ELEC</code> command either imposes a single molecular electric charge value
+or proposes alternative values. If no <code>ELEC</code> command is present,
+the imposed value is 0. Electric charges are expressed by integers, in
+proton electric charge units. Alternative values
+are given, as usual, between parenthesis and are separated by blanks.
+</p>
+<p>
+Example: <code>ELEC (-1 0 1)</code>, constrains the molecular electric charge
+to be -1, 0 or +1, in proton electric charge units. 
+</p>
+
+<h3>
+<code>MAXP/MAXN</code>
+</h3>
+<p>
+MAXimum number of Positively/Negatively charged atoms
+</p>
+<p>
+The <code>MAXP/MAXN</code> command has a single integer argument that is
+the maximum number of positively/negatively charged atoms in the molecule.
+If no <code>MAXP/MAXN</code> command is present, then no control takes place.
+</p>
+<p>
+Example: <code>MAXP 1</code> constrains the molecule to have at most 1
+positively charged atom.
+</p>
+
+<h3>
+<code>DEMU</code>
+</h3>
+<p>
+DEfault MUlt parameter
+</p>
+<p>
+The <code>DEMU</code> command is only necessary if the molecular formula
+has alternatives. In this case, each element has a minimum number of occurences.
+The number of MULT commands for an element cannot be higher than the minimum number
+of occurences. If the actual number of occurences is strictly higher than
+the minimum number, the supplementary atoms get, by default, the most general status
+for the element, as inferred from Variant/statuslist.txt.
+The <code>DEMU</code> command overrides the default status for an element,
+given as first command parameter. The following parameters are those of
+a <code>MULT</code> command.
+</p>
+<p>
+Example: <code>DEMU N N (1 2 3) (0 1 2 3) (0 1)</code> indicates that
+any supplementary nitrogen atom (relatively to the minimum number
+of nitrogen atoms, as indicated by the <code>FORM</code> command)
+is a trivalent nitrogen, of any hybridization, any multiplicity,
+either not electrically charged or with a single positive charge.
+</p>
+
+<h2>
+The <code>PIEC</code> command.
+</h2>
+<p>
+The <code>CNTD</code> command with 1 as argument forces LSD to deliver
+connected (in one piece) solutions. When its argument is 0, this control is disabled.
+The <code>PIEC</code> pyLSD-specific command operates on solution connectivity
+but at a different level.
+If one or more VSAs are present, the first task of pyLSD to propose a coordinance to each VSA.
+The coordinance concerns only the graph of heavy (non-hydrogen) atoms, considering each
+chemical bond between them as simple. The coordinance of an atom is simply the number
+of its neighbors. The molecular coordinance is sum the coordinances of all the heavy atoms;
+it is equal to twice the number of bonds between atoms (again, all bonds are simple).
+It can be proved that: <BR>
+number of rings = number of bonds - number of atoms + number of connected parts.<BR>
+Considering that each atom has a defined coordinance and therefore that the molecule has
+a defined number of bonds, that the molecule has a defined number of atoms (the VMF ambiguity
+has already been resolved at this time), then a set of possible number of connected parts
+corresponds to a set of possible number of rings.
+If all the possible number of rings are negative, then the currently proposed VSA
+coordinance set is not a valid one.
+The parameter of the <code>PIEC</code> indicates that the number of connected parts of the
+solution is comprised between 1 and the parameter value (included).
+</p>
+<p>
+Looking for all the isomers of benzene, made of neutral carbon atoms, sp, sp2 or sp3,
+bound to 0, 1, 2 or 3 hydrogen atoms, it might be possible to consider that all atoms
+are monocoordinated (6 sp atoms, each bound to 1 H atom, like in a set of 3 acetylene molecules).
+The molecular coordinance is 6, resulting in 3 bonds. With 6 atoms and 1 as single possible
+number of pieces, the number of rings would be &#x2011;2. With <code>PIEC 1</code>, the possibility
+of having 6 monocoordinated carbon atoms must not be further explored.
+The tri-acetylene solution can only be produced with a <code>PIEC 3</code> command.
+However, <code>PIEC 1</code> does not prevent the generation of a non-connected solution.
+The solution that consists in cyclobutadiene and acetylene has 5 bonds. With 6 atoms and
+1 connected part, the number of rings is 0, which is acceptable.
+Therefore, the <code>PIEC</code> command is only a way to eliminate unrealistic possibilities
+in the assignment of particular coordinance values to the VSAs, and not a real
+control on the solution connectivity. This control can only be achieved by changing LSD itself
+through a modification of the <code>CNTD</code> command.
+</p>
+
+<h2>
+Solution ranking.
+</h2>
+<p>
+If at least one carbon atom has its experimental chemical shift defined by a
+<code>SHIX</code> command, then the prediction of the chemical shifts will be carried out.
+The sum of the absolute values of the differences between experimental
+and predicted values is used as criterion for solution ranking.
+The best fit solution is presented first.
+<p>
+
+
+<h2>
+Acknowledgments
+</h2>
+<ul>
+<li>Bertrand Plainchont, for many improvements of LSD that made PyLSD possible.</li>
+<li>Stefan Kuhn, for his help on chemical shift prediction.</li>
+<li>Ritchy Leroy, for translating the original Python 2 code into Python 3.</li>
+</ul>
+
+<h2>
+Contact
+</h2>
+<p>
+<a href="mailto:jean.marc.nuzillard@gmail.com">jean.marc.nuzillard@gmail.com</a>
+</p>
+</body>
+</html>
+

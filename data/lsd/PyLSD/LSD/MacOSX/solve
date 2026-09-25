@@ -1,0 +1,7 @@
+#!/bin/sh
+./lsd $1
+if ./outlsd 6 < $1.sol > $1.coo
+then
+	./genpos < $1.coo > $1.ps
+	open $1.ps &
+fi

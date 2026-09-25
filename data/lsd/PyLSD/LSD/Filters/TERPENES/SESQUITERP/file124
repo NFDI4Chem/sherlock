@@ -1,0 +1,27 @@
+; Coded from file: 111213-trinor-farnesane.mol
+; Skeleton: 11,12,13-TRINOR-FARNESANE
+
+SSTR S1 C (1 2 3) (0 1 2 3)
+SSTR S2 C (1 2 3) (0 1 2)
+SSTR S3 C (2 3) (0 1)
+SSTR S4 C (1 2 3) (0 1 2)
+SSTR S5 C (1 2 3) (0 1 2)
+SSTR S6 C (1 2 3) (0 1 2)
+SSTR S7 C (2 3) (0 1)
+SSTR S8 C (1 2 3) (0 1 2)
+SSTR S9 C (1 2 3) (0 1 2)
+SSTR S10 C (1 2 3) (0 1 2 3)
+SSTR S11 C (1 2 3) (0 1 2 3)
+SSTR S12 C (1 2 3) (0 1 2 3)
+
+LINK S7 S11
+LINK S3 S12
+LINK S9 S10
+LINK S8 S9
+LINK S7 S8
+LINK S6 S7
+LINK S5 S6
+LINK S4 S5
+LINK S3 S4
+LINK S2 S3
+LINK S1 S2

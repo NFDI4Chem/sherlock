@@ -1,0 +1,397 @@
+
+
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+<TITLE>Le logiciel LSD</TITLE>
+<META NAME="Author" CONTENT="J.-M. Nuzillard">
+<META NAME="KeyWords" CONTENT="LSD, RMN, chimie, organique, structure, &eacute;lucidation, ordinateur, programme">
+</HEAD>
+<BODY BACKGROUND="Images/lsd.jpg">
+
+<P>
+<CENTER>
+	<FONT SIZE="7" COLOR="#21B2B7" FACE="Matura MT Script Capitals">
+	LSD<BR>
+	</FONT>	
+	<FONT SIZE="6" COLOR="#21B2B7" FACE="Matura MT Script Capitals">
+	Logic for Structure Determination
+	<BR>
+	</FONT>	
+	<P>
+<IMG SRC="Images/twst_bar.gif">
+</P>
+</CENTER>
+
+<P>
+Le logiciel LSD est un 
+<A HREF = "http://www.gnu.org/philosophy/free-sw.html">
+logiciel libre</A> distribu&eacute; sous
+<A HREF = "licence.txt">license GPL</A>.
+</P>
+
+<P>
+En voici
+les <A HREF = "INSTALL_FR.html">instructions d'installation
+&agrave; partir des sources</A><BR>
+et le <A HREF = "MANUAL_FR.html">manuel d'utilisation </A>.
+</P>
+
+</P>
+Voir le <A HREF = "HISTORY.html"> fichier d'historique </A> (en anglais). <BR>
+</P>
+
+<P>
+Envoyer vos questions, remarques et suggestions &agrave; :
+<A HREF="Mailto:jm.nuzillard@univ-reims.fr">jm.nuzillard@univ-reims.fr</A><BR>
+Vous pouvez aussi me faire savoir si voulez (ou non) &ecirc;tre tenu 
+inform&eacute;(e) des nouveaut&eacute;s.
+</P>
+
+<P>
+D'autres logiciels libres pour la chimie sont disponibles sur le site
+<A HREF = "http://www.redbrick.dcu.ie/~noel/linux4chemistry/">
+linux4chemistry</A>.
+</P>
+
+<P>
+Retrouvez LSD sur <a href="https://www.linkedin.com/groups/4490407/">
+<img src="Images/linkedin.png" width=30 align=middle alt="linkedin" title="LSD software" /> </a>
+</P>
+
+<P>
+Retrouvez LSD sur <a href="https://nuzillard.github.io/LSD/">GitHub</a>
+</P>
+
+<P>
+<FONT SIZE="5" COLOR="#21B2B7" FACE="Matura MT Script Capitals">
+Description
+</FONT>	
+</P>
+
+<P>
+Le but du programme LSD est de d&eacute;duire toutes les structures mol&eacute;culaires 
+planes d'une substance organique qui sont compatibles avec un ensemble 
+de donn&eacute;es spectroscopiques. 
+La construction des structures repose sur des informations de 
+connectivit&eacute; d&eacute;duites de donn&eacute;es de RMN 2D, sans faire
+r&eacute;f&eacute;rence &agrave; une 
+base de donn&eacute;es de d&eacute;placement chimique. 
+Des mol&eacute;cules comportant jusqu'&agrave; 50 atomes 
+(hydrog&egrave;nes except&eacute;s) 
+ont &eacute;t&eacute; &eacute;tudi&eacute;es par le programme LSD.
+</P>
+
+<P>
+Le protocole exp&eacute;rimental requis par le programme LSD n&eacute;cessite 
+l'enregistrement des spectres de RMN 1D du proton et du <SUP>13</SUP>C, 
+ainsi que des spectres 2D de corr&eacute;lation des d&eacute;placements chimiques 
+homonucl&eacute;aires COSY et h&eacute;t&eacute;ronucl&eacute;aire
+HMQC (ou HSQC) et HMBC.
+</P>
+
+<P>
+Le statut de chaque atome doit &ecirc;tre d&eacute;crit et comprend le nom de 
+l'&eacute;l&eacute;ment chimique, l'&eacute;tat d'hybridation 
+(sp<SUP>3</SUP>, sp<SUP>2</SUP> ou sp), 
+le nombre d'atomes d'hydrog&egrave;ne port&eacute;s et la charge &eacute;lectrique formelle.
+Cette partie des donn&eacute;es est g&eacute;n&eacute;ralement
+facile &agrave; &eacute;crire pour les atomes de carbone. 
+La connaissance de la formule brute du compos&eacute; &eacute;tudi&eacute; permet 
+&agrave; l'utilisateur de d&eacute;finir le statut des h&eacute;t&eacute;roatomes.
+</P>
+
+<P>
+Des liaisons carbone-carbone sont ais&eacute;ment d&eacute;duites par le 
+programme LSD &agrave; partir des donn&eacute;es de type COSY et HMQC. 
+L'association des donn&eacute;es des spectres HMQC et HMBC fournit un ensemble 
+de paires d'atomes de carbones (rep&eacute;r&eacute;s par leur 
+d&eacute;placement chimique) qui sont, 
+soit directement li&eacute;s, soit li&eacute;s &agrave; un atome commun 
+qui peut a priori &ecirc;tre tout autre atome de la mol&eacute;cule. 
+Cette contrainte est relativement faible et 
+ouvre un vaste espace de possibilit&eacute;s &agrave; explorer. 
+Cependant, les contraintes impos&eacute;es par le statut 
+des atomes et d'autres fournies par l'utilisateur r&eacute;duisent 
+consid&eacute;rablement le nombre de solutions. 
+La liste des voisins possibles d'un atome peut &ecirc;tre restreinte afin de 
+prendre en compte des consid&eacute;rations triviales de d&eacute;placement chimique 
+ou de multiplicit&eacute; des signaux de RMN du proton. 
+Par exemple, il est possible de forcer un <SUP>13</SUP>C &agrave; 70 ppm &agrave; avoir 
+un voisin de type h&eacute;t&eacute;roatome. 
+L'utilisateur est seul responsable de l'introduction de telles contraintes. 
+Des informations contradictoires conduisent le programme &agrave;
+ne fournir aucune solution.
+</P>
+
+<P>
+La faible r&eacute;solution des spectres HMQC et HMBC dans le domaine 
+des d&eacute;placements chimiques des <SUP>13</SUP>C cause des 
+ambigu&iuml;t&eacute;s d'interpr&eacute;tation. 
+Il est possible dans LSD de d&eacute;finir des groupes de r&eacute;sonances. 
+Ainsi, une corr&eacute;lation ambigu&euml; est n&eacute;cessairement 
+caus&eacute;e par un membre du groupe. 
+La possibilit&eacute; de traiter ce type de cas est indispensable 
+&agrave; la r&eacute;solution de probl&egrave;mes r&eacute;els.
+</P>
+
+<P>
+Les solutions trouv&eacute;es peuvent &ecirc;tre tri&eacute;es par 
+un filtre de sous-structures. 
+Une sous-structure est donn&eacute;e comme liste d'atomes et de liaisons. 
+Le statut des atomes n'est pas fix&eacute; de mani&egrave;re rigide. 
+Les structures qui violent de mani&egrave;re &eacute;vidente la r&egrave;gle de Bredt 
+(pas de double liaison en t&ecirc;te de pont de syst&egrave;me 
+bicyclique de faible taille) 
+sont &eacute;limin&eacute;es par algorithme non-&eacute;nerg&eacute;tique.
+</P>
+
+<P>
+Les donn&eacute;es d'un probl&egrave;me sont cod&eacute;es par 
+l'utilisateur dans un fichier texte. 
+Les solutions sont aussi stock&eacute;es dans un fichier texte. 
+Un programme auxiliaire "outlsd" convertit le format de structure "passe-partout" 
+en fichiers de coordonn&eacute;es 2D, en cha&icirc;nes SMILES, 
+en coordonn&eacute;es 3D (fantaisistes en l'absence de donn&eacute;es
+st&eacute;r&eacute;ochimiques). 
+Les coordonn&eacute;es 2D sont traduites soit en dessins Postscript 
+soit au format ".sdf" (SDF) accept&eacute; par des logiciels commerciaux.
+</P>
+
+<P>
+L'ex&eacute;cution du programme est contr&ocirc;l&eacute;e 
+par des commandes sp&eacute;cifiques. Il est possible de :
+
+<UL>
+<LI>contr&ocirc;ler les donn&eacute;es apr&egrave;s leur stockage en m&eacute;moire </LI>
+<LI> choisir la mise en forme des structures obtenues </LI>
+<LI> acc&eacute;der au plus gros fragment produit
+(d&eacute;bogage lorsqu'il n'y a pas de solution au probl&egrave;me) </LI>
+<LI> produire des structures incompl&egrave;tes lorsque le nombre de 
+solutions est &eacute;norme (structures communes &agrave; un ensemble de solutions) </LI>
+<LI> utiliser ou non l'information de sous-structure </LI>
+<LI> ex&eacute;cuter pas &agrave; pas (pas tr&egrave;s pratique) </LI>
+<LI> demander comment chaque solution est obtenue </LI>
+<LI> imprimer des commentaires en cours d'ex&eacute;cution </LI>
+<LI> limiter le temps d'ex&eacute;cution et 
+le nombre de structures produites </LI>
+</UL>
+
+Des dizaines de structures ont &eacute;t&eacute; &eacute;tudi&eacute;es
+par le programme LSD,
+essentiellement dans le domaine des terp&egrave;nes et des alcalo&iuml;des.
+Les publications relatives &agrave; LSD
+concernent soit le principe soit les applications &agrave;
+l'&eacute;lucidation de structures originales.
+</P>
+
+<P>
+<FONT SIZE="5" COLOR="#21B2B7" FACE="Matura MT Script Capitals">
+Bibliographie
+</FONT>
+</P><P>
+J.-M. Nuzillard and G. Massiot. <BR>
+Computer aided spectral assignment in nuclear magnetic resonance spectroscopy. <BR>
+<I>Analytica Chimica Acta</I> <B>1991</B>, <I>242</I>, 37-41. DOI: 10.1016/0003-2670(91)87045-9
+</P>
+
+<P>
+J.-M. Nuzillard and G. Massiot. <BR>
+Logic for Structure Determination. <BR>
+<I>Tetrahedron</I> <B>1991</B>, <I>47</I>, 3655-3664. DOI: 10.1016/S0040-4020(01)80878-4
+</P>
+
+<P>
+J.-M. Nuzillard. <BR>
+A quick method for the automatic detection of anti-Bredt structures. <BR>
+<I>J. Chem. Inf. Comput. Sci.</I> <B>1994</B>, <I>34</I>, 723-724. DOI: 10.1021/ci00020a004
+</P>
+
+<P>
+S. V. Ley, K. Doherty, G. Massiot and J.-M. Nuzillard. <BR>
+Connectivist approach to organic structure determination. 
+LSD-program assisted NMR analysis of the insect antifeedant azadirachtin. <BR>
+<I>Tetrahedron</I> <B>1994</B>, <I>50</I>, 12267-12280. DOI: 10.1016/S0040-4020(01)89576-4
+</P>
+
+<P>
+J.-M. Nuzillard, W. Naanaa, and S. Pimont. <BR>
+Applying the constraint satisfaction paradigm for structure generation. <BR>
+<I>J. Chem. Inf. Comput. Sci.</I> <B>1995</B>, <I>35</I>, 1068-1073. DOI: 10.1021/ci00028a018
+</P>
+
+<P>
+G. Almanza, L. Balderama, C. Labb&eacute;, C. Lavaud, G. Massiot,
+J.-M. Nuzillard, J. D. Connolly, L. J. Farrugia, and D. S. Rycroft. <BR>
+Clerodane diterpenoids and ursane triterpenoid from <I>Salvia haenkei</I>. <BR>
+Computer-assisted structural elucidation. <BR>
+<I>Tetrahedron</I> <B>1997</B>, <I>53</I>, 14719-14728. DOI: 10.1016/S0040-4020(97)00943-5
+</P>
+
+<P>
+J.-M. Nuzillard. <BR>
+D&eacute;termination assist&eacute;e par ordinateur de la 
+structure des mol&eacute;cules organiques. <BR>
+<I>J. Chim. Phys.</I> <B>1998</B>, <I>95</I>, 169-177. DOI: 10.1051/jcp:1998117
+</P>
+
+<P>
+G. Massiot, C. Lavaud, and J.-M. Nuzillard. <BR>
+Structure elucidation of plant secondary products. Chemical from plants. 
+Perspectives on plant secondary products. <BR>
+Imperial College Press, 1999, pp. 187-214.
+</P>
+
+<P>
+J.-M. Nuzillard, J. D. Connolly, C. Delaude, B. Richard,
+M. Z&egrave;ches-Hanrot, and L. Le Men-Olivier. <BR>
+Computer-assisted structural elucidation.
+Alkaloids with a novel diaza-adamantane skeleton from the seeds 
+of <I>Acosnium panamense</I> (Fabaceae). <BR>
+<I>Tetrahedron</I> <B>1999</B>, <I>55</I>, 11511-11518. DOI: 10.1016/S0040-4020(99)00661-4
+</P>
+
+<P>
+D. Mulholland, M. Randrianarivelojosia, C. Lavaud, J.-M. Nuzillard,
+and S. L. Schwikkard. <BR>
+Limonoid derivatives from <I>Astrotrichilia voamatata</I>. <BR>
+<I>Phytochemistry</I> <B>2000</B>, <I>53</I>, 115-118. DOI: 10.1016/S0031-9422(99)00488-4
+</P>
+
+<P>
+D. Mulholland, S. L. Schwikkard, P. Sandor, and J.-M. Nuzillard. <BR>
+Delevoyin C, a tetranortriterpenoid from <I>Entendophragma delevoyi</I>. <BR>
+<I>Phytochemistry</I> <B>2000</B>, <I>53</I>, 465-468.  DOI: 10.1016/S0031-9422(99)00546-4
+</P>
+
+<P>
+J.-M. Nuzillard. <BR>
+Automatic structure determination of organic molecules: 
+principle and implementation of the LSD program. <BR>
+<I>Chinese Journal of Chemistry</I> <B>2003</B>, <I>21</I>, 1263-1267. DOI: 10.1002/cjoc.20030211006
+</P>
+
+<P>
+D. A. Mulholland, A. Langlois, M. Randrianarivelojosia, E. Derat, J.-M. Nuzillard.
+<BR>
+The structure elucidation of a novel derivative from <I>Tachiadenus longiflorus</I>
+(Gentianaceae) using the LSD programme and quantum chemical computations. <BR>
+<I>Phytochemical analysis</I> <B>2006</B>, <I>17</I>, 87-90. DOI: 10.1002/pca.890
+</P>
+
+<P>
+J.-M. Nuzillard, V. P. Emerenciano. <BR>
+Automatic structure elucidation through data dase search and 2D NMR spectra
+analysis. <BR>
+<I>Natural Product Communications</I> <B>2006</B>, <I>1</I>, 57-64.
+</P>
+
+<P>
+A. Toribio, A. Bonfils, E. Delannay, E. Prost, D. Harakat, E. H&eacute;non,
+B. Richard, M. Litaudon, J.-M. Nuzillard, J.-H. Renault. <BR>
+Novel seco-Dibenzopyrrocoline Alkaloid from <I>Cryptocarya oubatchensis</I>. <BR>
+<I>Organic Letters</I> <B>2006</B>, <I>8</I>, 3825-3828. DOI: 10.1021/ol061435f
+</P>
+
+<P>
+D. A. Mulholland, M. K. Langat, N. R. Crouch, H. M. Coley, E. M. Mutambi, J.-M. Nuzillard. <BR>
+Cembranolides from the stem bark of the southern African medicinal plant, 
+<I>Croton gratissimus</I> (Euphorbiaceae). <BR>
+<I>Phytochemistry</I> <B>2010</B>, <I>71</I>, 1381-1386. DOI: 10.1016/j.phytochem.2010.05.014
+</P>
+
+<P>
+B. Plainchont, J.-M. Nuzillard, G. V. Rodrigues, M. J. P. Ferreira, M. T. Scotti, V. P. Emerenciano. <BR>
+New improvements in automatic structure elucidation using the LSD 
+(Logic for Structure Determination) and the SISTEMAT expert systems. <BR>
+<I>Natural Product Communications</I> <B>2010</B>, <I>5</I>, 763-770.
+</P>
+
+<P>
+B. Plainchont, V. P. Emerenciano, J.-M. Nuzillard. <BR> 
+Recent advances in the structure elucidation of small organic molecules by the LSD software. <BR>
+<I>Magn. Reson. Chem.</I> <B>2013</B>, <I>51</I>, 447-453. DOI: 10.1002/mrc.3965
+</P>
+
+<P>
+J.-M. Nuzillard. <BR>
+Automated Interpretation of NMR Spectra for Small Organic Molecules in Solution. <BR>
+<I>eMagRes</I> <B>2014</B>, <I>3</I>, 287-293. DOI: 10.1002/9780470034590.emrstm1384
+</P>
+
+<P>
+J. Hubert, S. Chollet, S. Purson, R. Reynaud, D. Harakat, A. Martinez, J.-M. Nuzillard, J.-H. Renault. <BR>
+Exploiting the Complementarity between Dereplication and Computer-Assisted Structure Elucidation for the
+Chemical Profiling of Natural Cosmetic Ingredients: <I>Tephrosia purpurea</I> as a Case Study. <BR>
+<I>J. Nat. Prod.</I> <B>2015</B>, <I>78</I>, 1609-1617. DOI: 10.1021/acs.jnatprod.5b00174
+</P>
+
+<P>
+H. I. Januar, N. P. Zamani, D. Soedharma, E. Chasanah. <BR>
+Logic Structure Determination (LSD) as a Computer-Assisted Structure Elucidation (CASE) for Molecular Structure Determination of Cytotoxic Cembranoids from Soft Coral. <BR>
+<I>Squalen Bull. of Mar. and Fish. Postharvest and Biotech.</I> <B>2016</B>, <I>11</I>, 1-6. DOI: 10.15578/squalen.v11i1.177
+</P>
+
+<P>
+J. K. Sihra, M. K. Langat, N. R. Crouch, J.-M. Nuzillard, B. Plainchont, D. A. Mulholland. <BR>
+Novel triterpenoid derivatives from <I>Eucomis bicolor</I> Bak. (Hyacinthaceae: Hyacinthoideae). <BR>
+<I>RSC Adv.</I> <B>2017</B>, <I>7</I>, 15416-15427. DOI: 10.1039/c6ra28584h
+</P>
+
+<P>
+A. Bakiri, B. Plainchont, V. de P. Emerenciano, R. Reynaud, J. Hubert, J.-H. Renault, J.-M. Nuzillard. <BR>
+Computer-aided Dereplication and Structure Elucidation of Natural Products at the University of Reims. <BR>
+<I>Mol. Inf.</I> <B>2017</B>, <I>36</I>, 1700027. DOI: 10.1002/minf.201700027
+</P>
+
+<P>
+J.-M. Nuzillard, B. Plainchont. <BR>
+Tutorial for the structure elucidation of small molecules by means of the LSD software. <BR>
+<I>Magn. Res. Chem.</I> <B>2018</B>, <I>56</I>, 458-468. DOI: 10.1002/mrc.4612
+</P>
+
+<P>
+M. K. Langat, N. B. Crouch, J.-M. Nuzillard, D. A. Mulholland. <BR>
+Pseudopulchellol: A unique sesquiterpene-monoterpene derived C-25 terpenoid from the leaves of
+<I>Croton pseudopulchellus</I> Pax (Euphorbiaceae). <BR>
+<I>Phytochem. Lett.</I> <B>2018</B>, <I>23</I>, 38-40. DOI: 10.1016/j.phytol.2017.11.008
+</P>
+
+<P>
+M. K. Langat, B. M. Nunda, C. Salter, B. O. Odusina, S. M. Isyaka, E. Mas-Claret, P. A. Onocha, J. O. Midiwo, J.-M. Nuzillard, D. Mulholland. <BR>
+Diterpenoids from the stem bark of <I>Croton Megacarpoides</I> Friis &amp; Gilbert. <BR>
+<I>Phytochem. Lett.</I> <B>2020</B>, <I>39</I>, 1-7. DOI: 10.1016/j.phytol.2020.07.003
+</P>
+<P>
+<FONT SIZE="5" COLOR="#21B2B7" FACE="Matura MT Script Capitals">
+Contributeurs
+</FONT>
+</P>
+
+<P>
+Bertrand Plainchont, Doctorant de septembre 2009 &agrave; d&eacute;cembre 2012 &agrave;
+l'Institut de Chimie Mol&eacute;culaire de Reims, UMR7312. <BR>
+</P>
+
+<P>
+Pr. Vicente de Paulo Emerenciano, Institut de Chimie, Universit&eacute; de S&atilde;o Paulo,
+pour la base de donn&eacute;es SISTEMAT dont a &eacute;t&eacute;
+extraite la collection de squelettes de substances naturelles.
+</P>
+
+<P>
+Etienne Derat, UMR 7611 CNRS "Laboratoire de Chimie Organique", <BR>
+Universit&eacute; Pierre et Marie Curie Paris VI, France, <BR>
+pour la cr&eacute;ation et le test des premiers ex&eacute;cutables sous Darwin. <P>
+</P>
+
+<HR>
+
+<P>
+<A HREF="http://www.univ-reims.fr/icmr">
+<I>retour &agrave; la page principale du laboratoire de l'auteur.</I></A>
+</P>
+</BODY>
+</HTML>
+

@@ -1,0 +1,18 @@
+; Methyl nitrate
+
+CNTD 1
+FORM "C 1 H 3 N 1 O 3"
+PIEC 1
+ELEC 0
+MAXP 1
+MAXN 1
+MULT 1 C 3 3
+MULT 2 N35 (1 2 3) (0 1 2 3) (0 1)
+MULT 3 O (2 3) (0 1) (-1 0)
+MULT 4 O (2 3) (0 1) (-1 0)
+MULT 5 O (2 3) (0 1) (-1 0)
+FULL L1
+ELEM L2 O
+DIFF L1 L2 L3
+PROP L2 0 L3
+EXIT

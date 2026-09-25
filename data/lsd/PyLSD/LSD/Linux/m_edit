@@ -1,0 +1,3 @@
+#!/bin/sh
+d=`dirname $0`
+wish $d/m_edit.tcl $*

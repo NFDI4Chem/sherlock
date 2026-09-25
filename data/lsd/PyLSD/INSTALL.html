@@ -1,0 +1,135 @@
+<html>
+<head>
+<title>PyLSD Installation</title>
+</head>
+<body>
+<center>
+<h1>
+PyLSD installation
+</h1>
+</center>
+<h2>
+Software dependencies
+</h2>
+<ul>
+<li>A python 2.7+ interpreter was needed to run pyLSD up to version a7.<br>
+<b>Python 3 is required </b>from version a8, included.<br>
+The python interpreter must be directly usable from the command line.<br>
+The command <code>python --version</code> prints the version identification message.<br>
+Python installation for Windows can be achieved from
+<A HREF="https://www.python.org/downloads/">https://www.python.org/downloads/</A>
+by downloading and running the file pointed by &quot;Windows installer (64-bit)&quot;.
+</li>
+<li>A <A HREF="https://www.java.com/fr/download/manual.jsp">java runtime environment</A>,
+version 6 or higher, is needed for structure ranking through the prediction of chemical shifts.
+</li>
+<li>A Postscript display software is needed to visualize the solution structure(s) pyLSD has found.<br>
+Under Windows, Ghostview is a possible viewer, among others.
+Once pyLSD is installed, open INSTALL_ENG.html in directory LSD for the installation of Ghostview.<br>
+Evince is often available as default viewer on Linux systems that run the GNOME desktop.
+</ul>
+<h2>
+Download pyLSD
+</h2>
+<ul>
+<li><A HREF="https://github.com/nuzillard/PyLSD/blob/main/pylsd-windows-a8.zip">For Windows</A></li>
+<li><A HREF="https://github.com/nuzillard/PyLSD/blob/main/pylsd-linux-a8.tar.gz">For Linux</A></li>
+</ul>
+<h2>
+Package contents
+</h2>
+<p>
+The downloaded archive file contains three directories:
+</p>
+<ul>
+<li>Variant: Contains the pyLSD Python (.py extention) files, the status list file and demo pyLSD input files</li>
+<li>Predict: Contains the java archive and class files that are required for chemical shift prediction .</li>
+<li>LSD: A LSD directory that at least contains the lsd, outlsd and genpos executables, and a Data directory
+for pyLSD-generated input, solution and graphics files.</li>
+</ul>
+<h2>
+The defaults.py configuration file
+</h2>
+<p>
+The defaults.py configuration file, in the Variant directory, contains computer dependent file locations that must be adjusted
+in order to have the parts of PyLSD running together. A backup copy named defaults_orig.py has already been created.
+Defaults.py lines like <code>self.xxx = yyy</code> define the value of parameter <code>xxx</code> as equal to <code>yyy</code>.
+The user is supposed to run pyLSD from the command line, with Variant as current directory.
+File edition under Windows may be carried out with the Notepad tool, or alternatively with notepad++.
+The following lines may be changed:
+</p>
+<ul>
+<li><code>self.statuslist = "statuslist.txt"</code>. This file has by default to be located in the current directory.
+Changing the content of this file and its name is possible but not recommanded.
+It contains the description of all possible atom status. Do not attempt to create new atom types with a number
+of neighbors equal to zero, like a chloride or a sodium ion. This does not work.</li>
+<li><code>self.datafolder = os.path.normpath("../LSD/Data")</code> indicates where pyLSD
+stores the pyLSD-generated input, solution and graphics files.</li>
+<li><code>self.lsdbin = os.path.normpath("../LSD")</code> indicates the location of the lsd, outlsd and genpos binary files.
+<li><code>self.rootname = "file"</code>. pyLSD is able to read input data from the standard input. In that case "file"
+is a default root name from which all pyLSD-generated files are named.</li>
+<li><code>self.viewerpath = '"C:\\Program Files (x86)\\Ghostgum\\gsview\\gsview32"' if self.isWin else "evince"</code>.
+indicates first where from the Postscript viewer can be launched in a Windows system and then where it can be launched on
+a Linux system. The path to the executable file, under Windows, can be simplified if the name of the directory that contains it
+has been included is the system environment PATH variable.</li>
+<li><code>self.predictorspath = os.path.normpath("../Predict")</code>is the path to the directory that contains the Java archive
+and class files that are needed for chemical shift prediction and solution ranking in the decreasing order of likelihood.</li>
+<li><code>self.java = '"C:\\Program Files\\Java\\jdk1.6.0_32\\bin\\java.exe"' if self.isWin else "java"</code>
+indicates the path to the java virtual machine. The path to the executable file, under Windows, can be simplified if the name
+of the directory that contains it has been included is the system environment PATH variable.</li>
+<li><code>self.javamemory = 1024</code> will allocate 1024 megabytes of memory to java.
+Increase value if a Java out-of-memory error occurs.</li>
+</ul>
+<h2>
+Testing your installation
+</h2>
+<ul>
+<li>Open a command line interpreter</li>
+<li>Change the current directory to "Variant"</li>
+<li>Type <code>python lsd.py breg57.lsd</code></li>
+</ul>
+<p>
+A new window with the two solutions of the breg57 problem should pop up on the computer screen.
+</p>
+<h2>
+First-aid
+</h2>
+<p>
+The resolution of the breg57.lsd problem generates files in the following order:
+</p>
+<ol>
+<li>base.txt: the list of all atom status known to pyLSD at the time it has been launched.</li>
+<li>../Predict/breg57_C.txt: the pilot file for the chemical shift prediction and ranking.</li>
+<li>../LSD/Data/breg57_1: the (only) input file for ../LSD/lsd.</li>
+<li>../LSD/Data/breg57_1.sol: the solution file from ../LSD/Data/breg57_1, generated by ../LSD/lsd.</li>
+<li>../LSD/Data/breg57_0.sol: the collection of all the solutions in a single solution file.</li>
+<li>../Predict/breg57_0.sdf: SD file for the chemical shift prediction and ranking, from ../LSD/outlsd (option 10).</li>
+<li>../Predict/breg57_R.txt: the file that contains the result of the chemical shift prediction and ranking, from java</li>
+<li>../Predict/breg57_D.sdf: like ../Predict/breg57_0.sdf but ranked in the decreasing order of solution likelihood, from java. Unsued.</li>
+<li>../LSD/Data/breg57_Ranked.sol: like ../LSD/Data/breg57_0.sol, but ranked according to ../Predict/breg57_R.txt.</li>
+<li>../LSD/Data/breg57_0.coo: coordinate file from ../LSD/Data/breg57_Ranked.sol, generated by ../LSD/outlsd (option 6)</li>
+<li>../LSD/Data/breg57_0.sdf: SD file from ../LSD/Data/breg57_Ranked.sol, generated by ../LSD/outlsd (option 7)</li>
+<li>../LSD/Data/breg57_0.ps: Postscript file, from ../LSD/Data/breg57_0.coo, generated by ../LSD/genpos</li>
+</ol>
+<p>
+The absence of some of these files might help to determine if prerequites are not met.
+A stop after step 3 means that the lsd executable file has not been found.
+A stop after step 5 means that the outlsd executable file has not been found.
+A stop after step 6 means that something went wrong with java or with the chemical shift predictor.
+A stop after step 11 means that something went wrong with genpos.
+If the .ps file is created after step 12 and is valid but if no window pops up, then the viewer is not accessible.
+The .coo, .sdf or .ps files may have been created but simply filled with only an error message.
+</p>
+<p>Linux users might feel the need to recompile the LSD binaries from source.
+For this purpose, open a command line interpreter, change the current directory to "LSD",
+type <code>make clean</code>, and then <code>sh install.sh</code></li>.
+</p>
+<h2>
+Contact
+</h2>
+<p>
+<a href="mailto:jean.marc.nuzillard@gmail.com">jean.marc.nuzillard@gmail.com</a>
+</p>
+</body>
+</html>
+

@@ -1,0 +1,20 @@
+; Dinitromethane
+
+CNTD 0
+FORM "C 1 H 2 N 2 O 4"
+PIEC 1
+ELEC 0
+MAXP 0
+MAXN 0
+MULT 1 C 3 2
+MULT 2 N35 (1 2 3) (0 1 2) (0 1)
+MULT 3 N35 (1 2 3) (0 1 2) (0 1)
+MULT 4 O (2 3) (0 1) (-1 0)
+MULT 5 O (2 3) (0 1) (-1 0)
+MULT 6 O (2 3) (0 1) (-1 0)
+MULT 7 O (2 3) (0 1) (-1 0)
+FULL L1
+LIST L2 4 5 6 7
+DIFF L1 L2 L3
+PROP L2 0 L3
+EXIT

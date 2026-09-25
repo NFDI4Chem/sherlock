@@ -1,0 +1,1 @@
+"C:\Program Files (x86)\Java\jdk1.7.0_02\bin\javac.exe" -classpath predictorc.jar;cdk-interfaces.jar;cdk-io.jar;cdk-core.jar;cdk-data.jar;cdk-standard.jar;cdk-valencycheck.jar;vecmath1.2-1.14.jar PredictorLSDC.java

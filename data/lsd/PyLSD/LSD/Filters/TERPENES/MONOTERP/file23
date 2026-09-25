@@ -1,0 +1,23 @@
+; Coded from file: 10nor-isocamphane.mol
+; Skeleton: 10NOR-ISOCAMPHANE
+
+SSTR S1 C (1 2 3) (0 1 2)
+SSTR S2 C (2 3) (0 1)
+SSTR S3 C (1 2 3) (0 1 2)
+SSTR S4 C (1 2 3) (0 1 2)
+SSTR S5 C (2 3) (0 1)
+SSTR S6 C (2 3) (0 1)
+SSTR S7 C (2 3) (0 1)
+SSTR S8 C (1 2 3) (0 1 2 3)
+SSTR S9 C (1 2 3) (0 1 2 3)
+
+LINK S7 S8
+LINK S6 S9
+LINK S1 S2
+LINK S1 S5
+LINK S2 S3
+LINK S2 S7
+LINK S3 S4
+LINK S4 S5
+LINK S5 S6
+LINK S6 S7

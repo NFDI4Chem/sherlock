@@ -1,0 +1,14 @@
+#!/bin/sh
+./lsd $1
+if ./outlsd 6 < $1.sol > $1.coo
+then
+# Uncomment next line to get a Postscript output
+	./genpos < $1.coo > $1.ps
+# Uncomment a line to select a postscript viewer
+#	gv $1.ps &
+	evince $1.ps &
+#	xpdf $1.ps &
+
+# Uncomment next line to view results with m_edit
+#	m_edit $1.ps &
+fi

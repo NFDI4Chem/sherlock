@@ -1,0 +1,305 @@
+<HTML>
+<HEAD>
+<TITLE> Installation de LSD
+</TITLE>
+</HEAD>
+<BODY>
+
+<CENTER>
+<H1>Installation de LSD &agrave; partir des sources pour les
+syst&egrave;mes d&eacute;riv&eacute;s d'UNIX</H1>
+</CENTER>
+
+<P>
+<I>Derni&egrave;re modification : 26 avril 2022.</I>
+</P>
+
+<P>
+Veuillez lire ce fichier attentivement
+avant d'entreprendre toute installation.
+</P>
+
+<P>
+La proc&eacute;dure d'installation a &eacute;t&eacute;
+test&eacute;e pour Cygwin (PC sous Windows, voir ci-apr&egrave;s),
+GNU/Linux et MacOSX.
+</P>
+
+<P>
+LSD est &eacute;crit en C ANSI et devrait &ecirc;tre portable 
+sur un grand nombre de plates-formes Unix.
+</P>
+
+<H1>Note aux utilisateurs de PC sous Windows</H1>
+
+<H2>Cygwin comme syst&egrave;me d'exploitation.</H2>
+
+<P>
+LSD-3.5.2 a &eacute;t&eacute; d&eacute;velopp&eacute; dans un environnement Unix.
+Toutefois, les utilisateurs de PC sous Windows
+peuvent utiliser LSD en installant
+l'environnement Cygwin, destin&eacute; &agrave; fournir sous Windows
+un sous-ensemble important des fonctionnalit&eacute;s d'Unix.
+Alternativement, il est possible d'utiliser
+une distribution binaire,
+<A HREF="LSDos-3.5.2.zip">LSDos</A>, qui
+correspond &agrave; LSD pour DOS.
+Une documentation sp&eacute;cifique est incluse.
+</P>
+
+<P>
+Cygwin est t&eacute;l&eacute;chargeable depuis
+<A HREF="http://www.cygwin.com">www.cygwin.com</A>.
+</P>
+
+<P>
+L'utilisation de Ghostview sous Windows est n&eacute;cessaire pour
+visualiser les fichiers Postscript contenant les solutions
+fournies par LSD.
+Il est possible de s'en passer en &eacute;ditant le fichier solve.
+Ghostview (gv) est t&eacute;l&eacute;chargeable &agrave;
+<A HREF="http://www.cs.wisc.edu/~ghost">www.cs.wisc.edu/~ghost</A>.
+Il faut aussi t&eacute;l&eacute;charger &agrave; partir du m&ecirc;me site Ghostscript (gs).
+L'installation de ces 2 logiciels (gs puis gv) se fera de pr&eacute;f&eacute;rence aux
+endroits propos&eacute;s par d&eacute;faut.
+</P>
+
+<P>
+L'installation de Cygwin est d&eacute;crite en d&eacute;tail sur
+<A HREF="http://www.gammon.com.au/smaug/installingcygwin.htm">
+www.gammon.com.au/smaug/installingcygwin.htm</A>,
+par exemple, mais &agrave; d'autres endroits aussi.
+Les paquets "gcc-g++" et "make" sont les seuls qui doivent &ecirc;tre install&eacute;s.
+D'autres paquets seront install&eacute;s automatiquement.
+</P>
+
+<P>
+Un double-clic sur l'ic&ocirc;ne de cygwin fait appara&icirc;tre
+une fen&ecirc;tre de commande DOS (avec un fond noir)
+dans laquelle il est possible de taper des commandes Unix.
+C'est de l&agrave; que vous pourrez lancer LSD, une fois install&eacute;.
+Selon la terminologie Unix, une fen&ecirc;tre de commande
+s'appelle aussi "fen&ecirc;tre de shell", voire "shell" tout simplement.
+</P>
+
+<P>
+Si vous voulez quitter (d&eacute;truire) une fen&ecirc;tre de commande,
+entrez Contr&ocirc;le-D (une fois pour la fen&ecirc;tre cr&eacute;&eacute;e par rxvt,
+une seconde fois pour la fen&ecirc;tre DOS).
+</P>
+
+<P>
+Dans le cas o&ugrave; vous ne seriez familiaris&eacute; ni avec Cygwin
+ni m&ecirc;me avec Unix, les points suivants vous seront probablement utiles.
+</P>
+
+<H3>Syst&egrave;me de fichiers</H3>
+<P>
+La racine du syst&egrave;me de fichiers de Cygwin se note "/"
+et se confond avec C:\cygwin64 pour Windows.
+"/" est pour cygwin le point &agrave; partir duquel tous les
+fichiers de la machine sont accessibles.
+</P>
+
+<H3>Dossier personnel</H3>
+<P>
+Votre dossier personnel (appel&eacute; "home") est l'endroit o&ugrave; vous
+rangerez vos propres programmes et documents, comme
+"C:\Users\MonNom\Documents" pour Windows.
+Avant de pouvoir entrer une commande dans une fen&ecirc;tre, vous
+obtenez dedans quelque chose comme MonNom@MonPC (&eacute;crit en vert)
+o&ugrave; MonPC est le nom de l'ordinateur
+et MonNom votre nom d'utilisateur.
+Votre dossier personnel s'appelle /home/MonNom pour Cygwin,
+et donc C:\cygwin64\home\MonNom pour Windows.
+Un synonyme pour le nom de ce dossier est "~", comme cela est visible
+en jaune dans les fen&ecirc;tres de commande ainsi que sur
+leur barre de titre.
+</P>
+
+<P>
+Votre dossier personnel est l'endroit o&ugrave; il faut
+copier le fichier LSD-3.5.2.tar.gz avant de le
+d&eacute;compacter (ne d&eacute;compactez pas maintenant) 
+et de proc&eacute;der &agrave; l'installation de LSD
+proprement dite (voir ci-apr&egrave;s).
+</P>
+
+<H3>Interpr&eacute;teur de commandes</H3>
+<P>
+Il est fortement recommand&eacute; de modifier dans le dossier personnel
+un fichier nomm&eacute; ".bash_profile".
+Ajoutez-y à la fin la ligne "export PATH=.:$PATH" 
+(sans les guillemets).
+Quittez la fen&ecirc;tre de commande puis r&eacute;ouvrez en une neuve pour
+que ce qui vient d'&ecirc;tre fait soit pris en compte.
+La commande qui a &eacute;t&eacute; mise dans le fichier .bash_profile
+va faire en sorte que le dossier courant soit toujours dans la liste
+des dossiers o&ugrave; sont r&eacute;pertori&eacute;s les programmes ex&eacute;cutables.
+Cette liste est d&eacute;finie par le param&egrave;tre $PATH
+de l'interpr&eacute;teur de commandes.
+</P>
+
+<H3>Naviguer dans l'arborescence</H3>
+<P>
+Lorque vous ouvrez une fen&ecirc;tre de commande, le dossier courant sera votre
+dossier personnel (d'o&ugrave; le ~ dans la barre de titre, laquelle
+affiche toujours le nom du dossier courant).
+Pour changer de dossier courant entrez la commande "cd" suivie d'un espace,
+suivi du nom du dossier que l'on veut atteindre, suivi de la touche "Entr&eacute;e".
+S'il s'agit d'un sous-dossier du dossier courant, son nom suffit.
+S'il s'agit du dossier parent, son nom est toujours "..".
+Il est aussi possible d'utiliser un nom "absolu", comman&ccedil;ant par /
+et suivi de la suite des noms des dossiers imbriqu&eacute;s, s&eacute;par&eacute;s par des /.
+Par exemple "cd /home/MyName" fait du dossier personnel le dossier courant.
+La commande "cd" sans argument vous replace aussi dans votre dossier personnel.
+</P>
+
+<P>
+Le nom du dossier courant est toujours "." quel qu'il soit.
+Pour conna&icirc;tre son contenu complet il suffit de rentrer
+la commande "ls -a" (ou de regarder avec l'Explorateur Windows).
+Si vous n'avez pas modifi&eacute; de fichier ".bash_profile", il faudra taper
+"./lsd" au lieu de "lsd" (de m&ecirc;me pour outlsd et genpos), pour signifier
+que le programme &agrave; ex&eacute;cuter se trouve dans le dossier courant.
+</P>
+
+<H3>Documentation</H3>
+<P>
+Le site Web de Cygwin contient une description 
+d&eacute;taill&eacute;e du logiciel et
+une abondante documentation.
+</P>
+
+<H1>Installation</H1>
+<P>
+Si ce n'est d&eacute;j&agrave; fait, faites du dossier qui contient
+LSD-3.5.2.tar.gz
+le dossier courant, et entrez les commandes suivantes :
+</P>
+
+<P>
+1. D&eacute;compactez :<BR>
+gunzip LSD-3.5.2.tar.gz<BR>
+tar xvf LSD-3.5.2.tar<BR>
+</P>
+
+<P>
+2. Changez de dossier courant<BR>
+cd LSD-3.5.2<BR>
+</P>
+
+<P>
+3. Configurez et compilez<BR>
+sh install.sh<BR>
+</P>
+
+<P>
+4. Testez<BR>
+make test<BR>
+</P>
+
+<P>
+Vous devriez voir la structure de la mol&eacute;cule de pin&egrave;ne.
+Si le test &eacute;choue mais apr&egrave;s une installation correcte 
+(&eacute;tape 3 sans erreur),
+il est probable que l'interpr&eacute;teur Postscript ne soit pas
+install&eacute; ou soit inaccessible par le fichier de script nomm&eacute; "solve".
+Pour r&eacute;soudre le probl&egrave;me, il convient d'&eacute;diter ce fichier 
+et de corriger le chemin d'acc&egrave;s &agrave; l'interpr&eacute;teur Postscript.
+</P>
+
+<H1>Notes</H1>
+
+<H2>La commande "lsd"</H2>
+<P>
+Le programme LSD est lanc&eacute; par la commande "lsd".
+Au moins pour certaines versions de Linux "lsd" est un alias
+de la commande "ls -d".
+Taper "lsd" donne alors la liste des dossiers contenus dans le dossier courant.
+Cela peut &ecirc;tre chang&eacute; provisoirement par la commande "unalias lsd"
+ou de mani&egrave;re permanente en modifiant le fichier de d&eacute;marrage
+qui contient les d&eacute;finitions des alias.
+</P>
+
+<H2>Compilateur C</H2>
+<P>
+Il faut utiliser un compilateur pour cr&eacute;er les fichiers
+ex&eacute;cutables &agrave; partir des fichiers sources &eacute;crits en langage C.
+Pour Cygwin et GNU/Linux, gcc est le compilateur C par d&eacute;faut
+et est inclus dans la distribution de ces syst&egrave;mes d'exploitation
+(sous r&eacute;serve de l'installation initiale des outils de
+d&eacute;veloppement).<BR>
+Pour MacOSX, il faut disposer de l'environnement
+de d&eacute;veloppement Apple pour utiliser le compilateur gcc.
+Le fichier Makefile qui est copi&eacute; dans le dossier LSD-3.5.2permet de compiler les sources par la commande "make fromSrc".
+</P>
+
+<H2>Interpr&eacute;teur Postscript</H2>
+<P>
+Ce type de programme est n&eacute;cessaire pour visualiser
+et imprimer les solutions fournies par lsd.
+Le fichier texte produit par lsd est traduit sous divers formats graphiques
+par le programme outlsd.
+Un de ces formats est traduisible en langage Postscript par le programme genpos
+&agrave; des fins de visualisation et d'impression.
+</P>
+
+<P>
+Avec Cygwin, vous utiliserez gsview64.exe pour Windows, 
+install&eacute; par la proc&eacute;dure
+d&eacute;crite dans la note aux utilisateurs de PC sous Windows (ci-dessus).
+Sous MacOSX et Linux open et evince sont respectivement
+les interpr&eacute;teurs g&eacute;n&eacute;ralement disponibles.
+</P>
+
+<H2>M_edit</H2>
+<P>
+M_edit est une sorte d'&eacute;diteur de structure chimique 
+tr&egrave;s simplifi&eacute;.
+Il est l&agrave; pour embellir les horribles dessins qu'outlsd est parfois
+capable de produire. Il est &eacute;crit en langage Tcl et utilise la 
+bo&icirc;te &agrave; outil Tk pour la partie graphique.
+Tcl/Tk est lanc&eacute; par la commande "wish", qui signifie "windowing shell".
+</P>
+
+<P>
+m_edit utilise les commandes tk_getOpenFile et tk_getSaveFile
+qui ne sont apparues qu'avec la version 8.0 de Tk.
+Vous devez donc utiliser celle-l&agrave; ou une version ult&eacute;rieure.
+</P>
+
+<P>
+Wish fait partie des distributions de Cygwin et de GNU/Linux,
+respectivement sous les noms de cygwish8x.exe et wish8.x (x = num&eacute;ro de version).
+Sous GNU/Linux, il est commode d'&eacute;tablir un lien symbolique entre
+wish8.x et wish avec la commande "ln -s /usr/bin/wish8.x /usr/bin/wish",
+si ce n'est pas d&eacute;j&agrave; fait.
+Il est aussi possible d'&eacute;diter le script m_edit pour qu'il invoque
+correctement wish.
+</P>
+
+<P>
+Pour MacOSX, Tcl/Tk est d&eacute;j&agrave; l&agrave;.
+</P>
+
+<H2>Solve</H2>
+<P>
+Solve est un petit script qui lance successivement lsd pour 
+r&eacute;soudre un probl&egrave;me de structure, 
+outlsd pour la cr&eacute;ation des dessins de mol&eacute;cules, 
+genpos pour leur traduction en Postscript et l'interpr&eacute;teur Postscript
+pour leur visualisation.
+Solve est lanc&eacute; lorsque vous tapez "make test" 
+(&eacute;tape 4 de l'installation).
+Si vous obtenez le r&eacute;sultat souhait&eacute; (la structure du pin&egrave;ne),
+l'installation est termin&eacute;e et vous pouvez commencer &agrave; apprendre
+comment &eacute;crire des fichiers de donn&eacute;es pour LSD en lisant
+MANUAL_FR.html.
+</P>
+
+<P>
+<I>Copyright(C)2000 CNRS-UMR 7312-Jean-Marc Nuzillard</I>
+</P>
+</BODY>
+</HTML>

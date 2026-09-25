@@ -1,0 +1,80 @@
+; Terpene pinene
+
+; HIST 1
+; ENTR 1
+ELIM 3 5
+
+MULT 1 C 2 0
+MULT 2 C 2 1
+MULT 3 C 3 1
+MULT 4 C 3 1
+MULT 5 C 3 0
+MULT 6 C 3 2
+MULT 7 C 3 2
+MULT 8 C 3 3
+MULT 9 C 3 3
+MULT 10 C 3 3
+
+HMQC 2 2
+HMQC 3 3
+HMQC 4 4
+HMQC 6 6
+HMQC 7 7
+HMQC 8 8
+HMQC 9 9
+HMQC 10 10
+
+HMBC 1 6
+HMBC 1 9
+HMBC 2 3
+HMBC 2 9
+HMBC 3 6
+HMBC 3 8
+HMBC 3 9
+HMBC 3 10
+HMBC 4 6
+HMBC 4 8
+HMBC 4 10
+HMBC 5 6
+HMBC 5 8
+HMBC 5 10
+HMBC 7 6
+HMBC 8 10
+HMBC 9 3
+HMBC 10 8
+HMBC 10 6 ; wrong
+HMBC 10 9 ; wrong
+HMBC 2 8 ; wrong
+
+
+BOND 1 2
+BOND 2 7
+
+QUAT L1
+PROP 8 0 L1
+; PROP 9 0 L1
+PROP 10 0 L1
+
+; a generic 4-membered ring.
+; such an in-file defined substructure is, by default, the F0 fragment.
+SSTR S1 A (2 3) (0 1 2)
+SSTR S2 A (2 3) (0 1 2)
+SSTR S3 A (2 3) (0 1 2)
+SSTR S4 A (2 3) (0 1 2)
+LINK S1 S2
+LINK S2 S3
+LINK S3 S4
+LINK S1 S4
+
+; fragment F1 is externally defined
+DEFF F1 "Filters/ring3"
+
+; skeleton database
+PATH "Filters/TERPENES/MONOTERP"
+
+; pinane
+SKEL F2 "PINANE"
+
+; search for 4-membered rings and exclude 3-membered rings and select pinane or menthane
+FEXP "F0 AND NOT F1 AND (F2 OR `MENTHANE`)"
+

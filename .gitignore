@@ -36,8 +36,10 @@
 .env
 scripts/tag_and_push_image.sh
 
-# entire data folder, except lsd.py and defaults.py as modified files from Variant folder
-data/*/**
-!data/lsd/PyLSD_Variant_mod
-!data/lsd/PyLSD_Variant_mod/defaults.py
-!data/lsd/PyLSD_Variant_mod/lsd.py
+# exclude data and database folders
+data/nmrshiftdb/
+data/acd_labs_predictions
+data/db-mongo
+data/db-postgres
+# exclude custom filters folder within lsd folder
+data/lsd/filters/

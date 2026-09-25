@@ -59,7 +59,7 @@ Start the docker compose with pre-built images in detached mode:
 
     docker compose up -d
 
-Or to re-build the images, download [PyLSD](https://github.com/nuzillard/PyLSD/blob/4db027118acf3d9c77d3a5f8dc9ce51dd3cbd468/pylsd-linux-a8.tar.gz) and make sure that the unpacked folder is located in the _data/lsd/_ folder and is re-named to "_PyLSD_". Copy the two modified files from the _data/lsd/PyLSD_Variant_mod_ folder into the _data/lsd/PyLSD/Variant_ folder and overwrite the two existing files there.
+Or to re-build the image, if not already given then download [PyLSD](https://github.com/nuzillard/PyLSD/blob/4db027118acf3d9c77d3a5f8dc9ce51dd3cbd468/pylsd-linux-a8.tar.gz) and make sure that the unpacked folder is located in the _data/lsd/_ folder and is re-named to "_PyLSD_". Copy the two modified files from the _data/lsd/PyLSD_Variant_mod_ folder into the _data/lsd/PyLSD/Variant_ folder and overwrite the two existing files there.
 
 To build and start the services in detached mode use:
 

@@ -1,0 +1,22 @@
+; Benzene
+
+CNTD 1
+BRUL 0
+FORM "C 6 H 6"
+PIEC 1
+MULT 1 C (1 2 3) (0 1 2 3)
+MULT 2 C (1 2 3) (0 1 2 3)
+MULT 3 C (1 2 3) (0 1 2 3)
+MULT 4 C (1 2 3) (0 1 2 3)
+MULT 5 C (1 2 3) (0 1 2 3)
+MULT 6 C (1 2 3) (0 1 2 3)
+CCLA 1
+SHIX 1 127.0
+SHIX 2 127.0
+SHIX 3 127.0
+SHIX 4 127.0
+SHIX 5 127.0
+SHIX 6 127.0
+COUF "my_solution_counter"
+STOF "my_stop_file"
+EXIT

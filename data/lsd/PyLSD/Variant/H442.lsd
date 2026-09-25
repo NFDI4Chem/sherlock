@@ -1,0 +1,156 @@
+;H442
+
+;ENTR 1
+;HIST 1
+;VERB 2
+ELIM 3 4
+
+ELEC 0
+PIEC 1
+FORM "C 18 H 13 N 1 O 3"
+
+MULT 1 C 3 3
+MULT 2 C 3 3
+MULT 3 C 2 1
+MULT 4 C 2 0
+MULT 5 C 2 1
+MULT 6 C 2 1
+MULT 7 C 2 0
+MULT 8 C 2 1
+MULT 9 C 2 1
+MULT 10 C 2 0
+MULT 11 C 2 0
+MULT 12 C 2 1
+MULT 13 C 2 0
+MULT 14 C 2 1
+MULT 15 C 2 0
+MULT 16 C 2 0
+MULT 17 C 2 0
+MULT 18 C 2 0
+MULT 19 N (2 3) 0 (0 1)
+MULT 20 O 3 0
+MULT 21 O (2 3) 0 (-1 0)
+MULT 22 O (2 3) 0 (-1 0)
+
+BOND 19 1 ; N-CH3
+BOND 2 20 ; O-CH3
+BOND 16 20
+
+HMQC 1 1
+HMQC 2 2
+HMQC 3 3
+HMQC 5 5
+HMQC 6 6
+HMQC 8 8
+HMQC 9 9
+HMQC 12 12
+HMQC 14 14
+
+COSY 5 14
+COSY 8 12
+COSY 6 12
+COSY 6 9
+
+;Corrélation HMBC Cq
+;Cq n° 18 a 176.3ppm
+;HMBC 18 8 ; 4J-
+HMBC 18 9 
+;HMBC 18 1 ; 4J-
+;HMBC 18 14 ; 4J-
+
+;Cq n° 17 a 171.8ppm
+HMBC 17 3 
+;HMBC 17 2 ; 4J-
+
+;q n° 16 a 162.3ppm
+HMBC 16 2 
+HMBC 16 3 
+
+;Cq n° 15 a 140.45ppm
+HMBC 15 14 
+HMBC 15 1 
+
+;Cq n° 13 a 136.98ppm
+HMBC 13 9 
+HMBC 13 12 
+
+;Cq n° 11 a 130.19ppm
+HMBC 11 8 
+HMBC 11 6 
+
+;Cq n° 10 a 127.14ppm
+HMBC 10 1 ; 4J
+HMBC 10 14 ; 4J
+HMBC 10 3 
+
+;Cq n° 7 a 125.84ppm
+HMBC 7 5 
+HMBC 7 3 
+
+;Cq n° 4 a 104.69ppm
+HMBC 4 8 
+HMBC 4 3 ; 4J
+
+;Corrélation HMBC CHar
+;CH n° 14 a 139.01ppm
+HMBC 14 1 
+;HMBC 14 5
+
+;CH n° 12 a 133.53ppm
+;HMBC 12 9 
+;HMBC 12 6 
+
+;CH n° 9 a 126.79ppm
+;HMBC 9 12 
+
+;CH n° 8 a 126.65ppm
+;HMBC 8 6 
+
+;CH n° 6 a 124.62ppm
+;HMBC 6 8 
+
+;CH n° 5 a 121.68ppm
+;HMBC 5 14 
+HMBC 5 3 
+
+;CH n° 3 a 104.19ppm
+;HMBC 3 2 ; 4J-
+HMBC 3 5
+
+;Corrélation HMBC CH3
+;CH3 n°1 a 50.35ppm
+HMBC 1 14 
+
+SHIX 1 50.35
+SHIX 2 56.53
+SHIX 3 104.19
+SHIX 4 104.69
+SHIX 5 121.68
+SHIX 6 124.62
+SHIX 7 125.84
+SHIX 8 126.65
+SHIX 9 126.79
+SHIX 10 127.14
+SHIX 11 130.19
+SHIX 12 133.53
+SHIX 13 136.98
+SHIX 14 139.01
+SHIX 15 140.45
+SHIX 16 162.20
+SHIX 17 171.80
+SHIX 18 176.30
+
+LIST L1 17 18
+LIST L2 21 22
+PROP L1 1 L2
+
+
+; fragment F1 is externally defined
+DEFF F1 "../LSD/Filters/ring3"
+DEFF F2 "../LSD/Filters/ring4"
+;DEFF F3 "../LSD/Filters/ring5"
+DEFF F4 "../LSD/Filters/ring7"
+DEFF F5 "../LSD/Filters/ring8"
+DEFF F6 "../LSD/Filters/ring9"
+
+FEXP "NOT F1 AND NOT F2 and NOT F4 and NOT F5 and NOT F6"

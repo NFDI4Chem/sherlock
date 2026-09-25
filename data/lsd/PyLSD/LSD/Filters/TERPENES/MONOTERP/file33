@@ -1,0 +1,21 @@
+; Coded from file: 8nor-myrcane.mol
+; Skeleton: 8NOR-MYRCANE
+
+SSTR S1 C (1 2 3) (0 1 2 3)
+SSTR S2 C (2 3) (0 1)
+SSTR S3 C (1 2 3) (0 1 2)
+SSTR S4 C (1 2 3) (0 1 2)
+SSTR S5 C (1 2 3) (0 1 2)
+SSTR S6 C (2 3) (0 1)
+SSTR S7 C (1 2 3) (0 1 2 3)
+SSTR S8 C (1 2 3) (0 1 2 3)
+SSTR S9 C (1 2 3) (0 1 2 3)
+
+LINK S6 S9
+LINK S2 S8
+LINK S4 S5
+LINK S3 S4
+LINK S5 S6
+LINK S6 S7
+LINK S2 S3
+LINK S1 S2

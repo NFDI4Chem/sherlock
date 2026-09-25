@@ -1,0 +1,1372 @@
+<HTML>
+<HEAD>
+<TITLE> Le manuel de LSD
+</TITLE>
+</HEAD>
+<BODY>
+
+<CENTER>
+<H1>LSD 3.5.2</H1>
+</CENTER>
+
+
+<I>Derni&egrave;re modification: 26 avril 2022.</I>
+
+<H2>Table des mati&egrave;res</H2>
+<UL>
+<A HREF = "#From spectra to data">Passer des spectres aux donn&eacute;es</A><BR>
+<A HREF = "#Command interpreter">Interpr&eacute;teur de commandes</A><BR>
+<A HREF = "#Quick start">Passer des donn&eacute;es aux structures</A><BR>
+<A HREF = "#Very quick start">Pour les impatients</A><BR>
+<A HREF = "#Drawing improvement">Am&eacute;liorer les dessins des mol&eacute;cules</A><BR>
+<A HREF = "#Structure of data files">Structure des fichiers de donn&eacute;es</A><BR>
+<UL>
+<A HREF = "#Basic commands">Les commandes de base</A><BR>
+<A HREF = "#List definition">D&eacute;finition des listes d'atomes</A><BR>
+<A HREF = "#Execution control">Contr&ocirc;le de l'ex&eacute;cution</A><BR>
+<A HREF = "#Substructural information">Informations de sous-structure</A><BR>
+</UL>
+<A HREF = "#Creating substructure files with mol2ab">Cr&eacute;er des fichiers de sous-structure avec mol2ab</A><BR>
+<A HREF = "#Result processing with outlsd">Traiter les r&eacute;sultats avec outlsd</A><BR>
+<A HREF = "#Result viewing with genpos">Visualiser les r&eacute;sultats avec genpos</A><BR>
+</UL>
+
+<A NAME = "From spectra to data"></A>
+<H2>Passer des spectres aux donn&eacute;es</H2>
+<P>
+Le but de LSD est d'aider l'utilisateur &agrave; 
+proposer une ou plusieurs structures
+mol&eacute;culaires &agrave; partir de donn&eacute;es issues 
+tr&egrave;s majoritairement de la RMN 2D.
+Les spectres qui doivent n&eacute;cessairement &ecirc;tre 
+enregistr&eacute;s sont les spectres
+HMQC (ou HSQC), COSY et HMBC.
+Sans ces trois spectres, il n'est pas envisageable de vouloir utiliser LSD.
+LSD ne contient aucune base de donn&eacute;es de d&eacute;placement chimique.
+Il n'y a par ailleurs aucun moyen de lui indiquer la liste des
+d&eacute;placements chimiques de la mol&eacute;cule &eacute;tudi&eacute;e,
+pour quel type de noyau que ce soit. 
+LSD utilise les informations de d&eacute;placement chimique et de couplage que
+l'utilisateur voudra bien lui indiquer, que ce soit pour d&eacute;finir 
+l'hybridation des atomes ou pour imposer &agrave; un atome 
+d'avoir un nombre de voisins donn&eacute; dans
+une liste d'atomes d&eacute;termin&eacute;e. 
+</P>
+
+<P>
+Le codage des donn&eacute;es de RMN pour en faire un fichier texte traitable
+par LSD est un exercice un peu d&eacute;routant pour le d&eacute;butant.
+Les paragraphes suivants essaieront de vous donner une m&eacute;thode pour
+y arriver.
+Il n'est pas inutile de regarder dans le dossier Data les exemples qui
+s'y trouvent.
+Un fichier de donn&eacute;es pour LSD est constitu&eacute; 
+de commandes ayant un plusieurs param&egrave;tres.
+Les commandes les plus utiles seront d'abord introduites, sachant qu'une description
+exhaustive du langage de commande est fournie au paragraphe
+<A HREF = "#Structure of data files">Structure des fichiers donn&eacute;es</A>.
+L'interface de type texte peut sembler un peu d&eacute;mod&eacute;e, mais il est parfois
+plus simple d'&eacute;diter un texte que de se perdre dans un d&eacute;dale 
+de menus et sous-menus
+dont les fonctions ne sont pas n&eacute;cessairement explicites.
+</P>
+
+<P>
+La premi&egrave;re &eacute;tape &agrave; franchir pour 
+d&eacute;terminer une structure inconnue consiste
+&agrave; faire l'hypoth&egrave;se d'une formule brute et 
+&agrave; d&eacute;terminer le statut de tous
+les atomes, hydrog&egrave;nes except&eacute;s.
+Le statut est constitu&eacute; d'un num&eacute;ro, d'un symbole chimique, 
+d'une hybridation (sp, sp<SUP>2</SUP> ou sp<SUP>3</SUP>),  
+d'un nombre d'hydrog&egrave;nes port&eacute;s par l'atome et
+d'une charge.
+D&eacute;finir un statut est contraignant pour l'utilisateur. 
+Il n'est pas toujours possible a priori de d&eacute;finir le statut des
+h&eacute;t&eacute;roatomes,
+surtout lorsqu'il y en a de natures chimiques diff&eacute;rentes.
+M&ecirc;me pour les carbones, le d&eacute;placement chimique ne suffit pas toujours
+pour d&eacute;duire de mani&egrave;re non-ambig&uuml;e l'hybridation.
+Il faut alors cr&eacute;er plusieurs jeux de donn&eacute;es et les essayer tous.
+Cette n&eacute;cessit&eacute; devrait &ecirc;tre lev&eacute;e au moins partiellement
+dans un proche avenir, mais il faut faire avec pour l'instant. 
+</P>
+
+<P>
+La num&eacute;rotation des atomes peut se faire de mani&egrave;re arbitraire.
+Une mani&egrave;re commode de proc&eacute;der consiste par exemple 
+&agrave; num&eacute;roter 
+les carbones &agrave; partir de 1 par ordre d&eacute;croissant
+de d&eacute;placement chimique du <SUP>13</SUP>C, puis de donner les num&eacute;ros
+suivants aux autres atomes (azotes, oxyg&egrave;nes, ...).
+Les num&eacute;ros des carbones issus du spectre 1D seront report&eacute;s sur
+les projections des spectres 2D HMQC et HMBC.
+Il est possible d'avoir un autre type d'atome (X) &agrave; condition que sa valence 
+soit d&eacute;finie par l'utilisateur.
+</P>
+
+<P>
+La commande qui d&eacute;finit le statut s'appelle <A HREF="#MULT"><CODE>MULT</CODE></A>
+(les majuscules sont importantes)
+et est suivie du num&eacute;ro d'atome, de son symbole chimique, de 1, 2 ou 3 pour
+l'hybridation (sp, sp<SUP>2</SUP> ou sp<SUP>3</SUP>), de la multiplicit&eacute;,
+c'est-&agrave;-dire du nombre d'hydrog&egrave;nes port&eacute;s et 
+de la charge (facultative).
+Ainsi, <CODE>MULT 1 C 2 0</CODE> indique que l'atome 1 est un carbone 
+(<CODE>C</CODE>) sp<SUP>2</SUP> (<CODE>2</CODE>) quaternaire (<CODE>0</CODE>).
+Il y aura dans le fichier de donn&eacute;es autant de lignes 
+commen&ccedil;ant par <CODE>MULT</CODE>
+que d'atomes dans la mol&eacute;cule, atomes d'hydrog&egrave;ne except&eacute;s.
+</P>
+
+<P>
+L'&eacute;tape suivante consiste &agrave; num&eacute;roter sur les
+spectres les atomes d'hydrog&egrave;ne.
+L&agrave; encore la num&eacute;rotation est arbitraire, mais il est
+pr&eacute;f&eacute;rable de donner &agrave; un hydrog&egrave;ne le m&ecirc;me
+ num&eacute;ro que celui du carbone auquel il est li&eacute;.
+Le spectre HMQC (ou HSQC) sert &agrave; &eacute;tablir cette correspondance.
+Deux hydrog&egrave;nes in&eacute;quivalents d'un groupe m&eacute;thyl&egrave;ne 
+auront le m&ecirc;me num&eacute;ro.
+Les num&eacute;ros ainsi attribu&eacute;s seront report&eacute;s 
+sur les spectres 2D COSY et HMBC.
+Une corr&eacute;lation dans un spectre 2D est caract&eacute;ris&eacute;e
+par le type du spectre,
+le num&eacute;ro d'atome dans la dimension 1 
+(c'est-&agrave;-dire du carbone pour HMQC, HSQC et HMBC)
+puis du num&eacute;ro d'atome en dimension 2 (toujours un num&eacute;ro
+d'hydrog&egrave;ne).
+Ainsi <A HREF="#HMQC"><CODE>HMQC 4 4</CODE></A> indique que le carbone 4 et l'hydrog&egrave;ne 4 
+sont li&eacute;s ensemble.
+Les commandes HMQC et HSQC sont &eacute;quivalentes.
+On code de mani&egrave;re similaire les commandes <CODE>HMBC</CODE> et
+<CODE>COSY</CODE>. 
+</P>
+
+<P>
+Toute liaison &eacute;vidente &agrave; &eacute;tablir doit 
+l'&ecirc;tre par une commande <A HREF="#BOND"><CODE>BOND</CODE></A>
+dont les deux param&egrave;tres sont les num&eacute;ros 
+des deux atomes &agrave; lier.
+Si le carbone 1 est celui d'une c&eacute;tone et qu'un 
+oxyg&egrave;ne 22 a &eacute;t&eacute; d&eacute;clar&eacute;
+sp<SUP>2</SUP>, il est possible d'&eacute;tablir d&egrave;s le d&eacute;but 
+une liaison entre 1 et 22
+par la commande <CODE>BOND 1 22</CODE>.
+</P>
+
+<P>
+En th&eacute;orie et sauf exceptions, l'ordre des commandes 
+dans un fichier n'est pas impos&eacute;.
+Le texte qui suit la commande <A HREF="#EXIT"><CODE>EXIT</CODE></A> est ignor&eacute;.
+En plus des commandes qui d&eacute;crivent le probl&egrave;me,
+il en existe d'autres
+pour le <A HREF = "#Execution control">contr&ocirc;le de l'ex&eacute;cution</A>.
+Il est pr&eacute;f&eacute;rable de les regrouper en d&eacute;but de fichier.
+Apr&egrave;s elles, on trouve les commandes <CODE>MULT</CODE>,
+<CODE>HMQC</CODE>, <CODE>COSY</CODE>, <CODE>HMBC</CODE> et 
+<CODE>BOND</CODE>.
+Cela forme le contenu minimum d'un fichier de donn&eacute;es pour LSD. 
+</P>
+
+<P>
+Une partie moins &eacute;vidente dans l'&eacute;criture de fichiers pour LSD est
+la d&eacute;finition de propri&eacute;t&eacute;s et des listes associ&eacute;es.
+Une propri&eacute;t&eacute; d'atome (commande <A HREF="#PROP"><CODE>PROP</CODE></A>) est l'indication
+pour un atome ou une liste d'atomes d'un nombre  
+(sup&eacute;rieur ou &eacute;gal &agrave; 1)
+de voisins qui doivent appartenir &agrave; une autre liste d'atomes.
+On peut aussi indiquer le nombre 0, qui signifie alors "tous les voisins".
+Par exemple, les carbones 8, 9 et 10 ont un d&eacute;placement chimique vers 15 ppm
+et portent les protons 8, 9 et 10 de trois m&eacute;thyles singulets aux environs
+de 1 ppm. 
+Les carbones 8, 9 et 10 sont tr&egrave;s probablement li&eacute;s &agrave; des carbones quaternaires.
+Pour coder cela avec LSD, il faut d&eacute;finir deux listes : celle des atomes
+8, 9 et 10 et celle des carbones quaternaires.
+Une liste d'atome est caract&eacute;ris&eacute;e par 
+son num&eacute;ro et par son contenu.
+Le contenu est d&eacute;finissable soit de mani&egrave;re 
+explicite (en donnant les num&eacute;ros
+de tous les atomes de la liste) soit &agrave; partir du statut des atomes.
+Il est aussi possible de combiner des listes entre elles par les op&eacute;rations
+de la th&eacute;orie des ensembles.
+Pour revenir &agrave; l'exemple, <A HREF="#LIST"><CODE>LIST L1 8 9 10</CODE></A>
+ d&eacute;finit la liste 1 et y met les num&eacute;ros 8, 9 et 10.
+<A HREF="#QUAT"><CODE>QUAT L2</CODE></A> d&eacute;finit la liste 2
+et y met tous les carbones quaternaires.
+Ceci &eacute;tant fait, la restriction sur les atomes 8, 9 et 10 
+qui consiste &agrave; imposer &agrave; tous leurs
+voisins d'&ecirc;tre quaternaires s'&eacute;crit <CODE>PROP L1 0 L2</CODE>.
+On aurait pu aussi &eacute;crire <CODE>PROP L1 1 L2</CODE> sachant qu'un carbone de
+groupe m&eacute;thyle ne poss&egrave;de toujours qu'un seul voisin.
+Les commandes de d&eacute;finition de listes et de propri&eacute;t&eacute;s 
+sont trait&eacute;es dans
+l'ordre o&ugrave; elles apparaissent dans le fichier de donn&eacute;es.
+En changer l'ordre peut en changer la signification.
+</P>
+
+<P>
+Un tentation fr&eacute;quente consiste &agrave; 
+vouloir sur-interpr&eacute;ter les spectres,
+c'est-&agrave;-dire de leur faire dire ce qu'ils ne disent pas.
+Introduire des propri&eacute;t&eacute;s fausses ou contradictoires 
+conduit LSD &agrave; ne pas
+fournir de solutions et &agrave; produire un message qui indique
+le niveau de recherche
+le plus profond atteint par LSD au cours de sa recherche
+(le si d&eacute;testable message "max stack level: ").
+De la m&ecirc;me mani&egrave;re, introduire des corr&eacute;lations 
+<I><SUP>n</SUP>J</I> avec  <I>n</I> sup&eacute;rieur &agrave; 3
+dans une commande <CODE>HMBC</CODE> ou <CODE>COSY</CODE>
+conduira &agrave; l'&eacute;chec de LSD, sauf incation contaire
+(voir ci apr&egrave;).
+Il veut mieux dans un premier temps mettre les commandes relatives aux
+corr&eacute;lations
+COSY et HMBC de faible intensit&eacute; en tant que commentaires,
+c'est-&agrave;-dire en les faisant pr&eacute;c&eacute;der par un point-virgule.
+Si le nombre des solutions produites est trop grand, il faut alors tenter
+de le diminuer en rajoutant des correlations ou des propri&eacute;t&eacute;s
+aux atomes.
+</P>
+
+<P>
+<B>Nouveau avec la version 3.1.0 : &eacute;limination des 
+corr&eacute;lations HMBC invalides.</B><BR>
+L'analyse d'une corr&eacute;lation HMBC peut ne conduire &agrave; 
+aucune solution pour deux raisons : 
+soit la partie de la mol&eacute;cule qui a &eacute;t&eacute;
+construite sur la base des corr&eacute;lations
+pr&eacute;c&eacute;demment examin&eacute;es est incompatible avec la nouvelle
+corr&eacute;lation (cas 1),
+soit celle-ci est erron&eacute;e (cas 2). 
+Ceci arrive soit de mani&egrave;re fortuite (artefact dans le spectre HMBC,
+ou faute de frappe, par exemple)
+soit parce que la corr&eacute;lation HMBC observ&eacute;e est issue 
+d'un couplage &agrave; travers plus de 3 liaisons. 
+Dans le cas 1, le m&eacute;canisme de r&eacute;solution remettra en cause 
+les choix pr&eacute;c&eacute;dents et
+devrait conduire &agrave; une solution si toutes les donn&eacute;es sont correctes.
+Dans le cas 2, cette remise en cause sera incapable de fournir une solution. 
+La corr&eacute;lation en question peut &ecirc;tre &eacute;limin&eacute;e afin de
+ v&eacute;rifier si elle est la cause
+du blocage.
+</P>
+
+<P>
+La commande <A HREF="#ELIM"><CODE>ELIM</CODE></A> permet de sp&eacute;cifier un nombre
+maximal de corr&eacute;lations
+qu'il est possible d'&eacute;liminer pour obtenir au moins une solution.
+La commande <CODE>ELIM</CODE> permet aussi de sp&eacute;cifier le nombre maximal 
+autoris&eacute; de liaisons entre les atomes qui interviennent dans toutes
+les corr&eacute;lations
+&eacute;limin&eacute;es.
+Cette contrainte peut &ecirc;tre d&eacute;sactiv&eacute; pour la 
+d&eacute;tection des erreurs accidentelles.
+</P>
+
+<P>
+Ce bref aper&ccedil;u sur les fichiers de donn&eacute;es de LSD
+permettra aux utilisateurs
+de prendre contact avec LSD, mais une lecture de la section
+<A HREF = "#Structure of data files">Structure des fichiers de donn&eacute;es</A>
+reste indispensable.
+</P>
+
+<A NAME = "Command interpreter"></A>
+<H2>Interpr&eacute;teur de commandes</H2>
+<P>
+Pour traiter les informations contenues dans un fichier de donn&eacute;es de LSD
+en tapant des commandes syst&egrave;me,
+les utilisateurs(trices) de Linux ou de Mac doivent ouvrir une application
+"Terminal", qui s'appelle "Invite de commandes" sous Windows.
+</P>
+<P>
+La syntaxe des commandes syst&egrave;me n'est pas exactement la m&ecirc;me
+sous Linux/Mac et Windows.
+</P>
+<P>
+Les deux interpr&eacute;teurs de commandes indiquent que l'utilisateur
+peut commencer &agrave; taper une commande en affichant une cha&icirc;ne 
+de caract&egrave;res nomm&eacute;e "prompt".
+</P>
+<P>
+Dans les paragraphes ci-dessous,
+<CODE><FONT COLOR = #FF00FF> UNIXprompt$ </FONT> </CODE>
+est le prompt affich&eacute; sous Linux/Mac et
+<CODE><FONT COLOR = #FF00FF> DOSprompt$ </FONT> </CODE>
+est le prompt de Windows. Les commandes qui suivent le simple
+<CODE><FONT COLOR = #FF00FF> prompt$ </FONT> </CODE>
+sont valides pour les deux types d'interpr&eacute;teurs.
+</P>
+<P>
+Dans les deux cas, il faut utiliser la commande <CODE>cd</CODE> pour que l'ex&eacute;cutable
+de LSD se trouve dans le dossier courant.
+</P>
+<P>
+Les utilisateurs de Linux/Mac doivent avoir le dossier courant (nomm&eacute; .)
+dans la liste des dossiers dans lesquels le Terminal recherche les ex&eacute;cutables.
+Cela peut &ecirc;tre r&eacute;alis&eacute; temporairement en tapant
+</P>
+<P>
+<CODE><FONT COLOR = #FF00FF> UNIXprompt$ </FONT> export PATH=.:$PATH</CODE><BR>
+</P>
+
+<A NAME = "Quick start"></A>
+<H2>Passer des donn&eacute;es aux structures</H2>
+<P>
+Un fichier de donn&eacute;es nomm&eacute; "pinene" 
+est fourni dans le r&eacute;pertoire "Data" .<BR>
+Son traitement par LSD est effectu&eacute; par :
+</P>
+
+<P>
+<CODE><FONT COLOR = #FF00FF> UNIXprompt$ </FONT> cp Data/pinene .</CODE><BR>
+<CODE><FONT COLOR = #FF00FF> DOSprompt$ </FONT> copy Data\pinene.lsd .</CODE>
+</P>
+<P>
+<CODE><FONT COLOR = #FF00FF> UNIXprompt$ </FONT> lsd pinene</CODE><BR>
+<CODE><FONT COLOR = #FF00FF> DOSprompt$ </FONT> lsd pinene.lsd</CODE>
+</P>
+
+<P>
+LSD indique qu'il a trouv&eacute; une solution.<BR>
+Le fichier "pinene.sol" qui a &eacute;t&eacute; cr&eacute;&eacute; 
+contient les informations de connectivit&eacute;
+pour la solution au probl&egrave;me. <BR>
+De mani&egrave;re g&eacute;n&eacute;rale un fichier de donn&eacute;es abc 
+ou abc.xyz fournit un fichier
+de solution nomm&eacute; abc.sol ou abc.xyx.sol.
+<BR>
+Un fichier de coordon&eacute;es 2D peut ensuite &ecirc;tre obtenu par:
+</P>
+
+<P>
+<CODE><FONT COLOR = #FF00FF> prompt$ </FONT> outlsd 6 < pinene.sol > pinene.coo</CODE>
+</P>
+
+<P>
+Le programme outlsd produit des coordonn&eacute;es 2D &agrave; partir des
+connectivit&eacute;s. <BR>
+Le r&eacute;sultat est visualis&eacute; par une visionneuse Postscript&reg;.<BR>
+Le dessin en langage Postscript est d'abord produit par :
+</P>
+
+<P>
+<CODE><FONT COLOR = #FF00FF> prompt$ </FONT> genpos < pinene.coo > pinene.ps</CODE>
+</P>
+
+<P>
+et affich&eacute; par :
+</P>
+
+<P>
+<CODE><FONT COLOR = #FF00FF> prompt$ </FONT> xpsview pinene.ps</CODE>
+</P>
+
+<P>
+si xpsview est le programme de visualisation Postscript de votre mat&eacute;riel
+(ce pourra&icirc;t &ecirc;tre open, gv ou gsview32).<BR>
+Un double click sur l'ic&ocirc;ne du fichier pinene.ps montre aussi le r&eacute;sultat.
+</P>
+
+<A NAME = "Very quick start"></A>
+<H2>Pour les impatients</H2>
+<P>
+La commande :
+</P>
+
+<P>
+<CODE><FONT COLOR = #FF00FF> prompt$ </FONT> solve pinene</CODE>
+</P>
+
+<P>
+encha&icirc;ne toutes les &eacute;tapes : r&eacute;solution du probl&egrave;me
+de structure, cr&eacute;ation et affichage graphique de la solution. <BR>
+Il n'est g&eacute;n&eacute;ralement pas souhaitable de proc&eacute;der
+ainsi pour un nouveau jeu de donn&eacute;es.
+Cela n'est envisageable que si lsd donne un nombre
+raisonnable de solutions (voir <A HREF = "#Quick start">
+Passer des donn&eacute;es aux structures</A>). <BR>
+</P>
+
+<A NAME = "Drawing improvement"></A>
+<H2>Am&eacute;lioration des dessins de mol&eacute;cules</H2>
+<P>
+Les coordonn&eacute;es produites par outlsd fournissent parfois des dessins
+difficiles &agrave; interpr&eacute;ter. <BR>
+Un programme simple nomm&eacute; m_edit a &eacute;t&eacute; 
+&eacute;crit pour am&eacute;liorer
+la qualit&eacute; des visuelle des structures mol&eacute;culaires. <BR>
+Il faut que Tcl/Tk et la commande <CODE>wish</CODE> soient install&eacute;s
+pour pouvoir utiliser m_edit (version 8.0 ou plus r&eacute;cente). <BR>
+La commande
+</P>
+
+<P>
+<CODE><FONT COLOR = #FF00FF> prompt$ </FONT> m_edit</CODE>
+</P>
+
+<P>
+lance m_edit. <BR>
+Le menu File permet de lire et de sauvegarder des fichiers et de sortir du programme.
+Le menu View est utilis&eacute; pour naviguer en avant et
+en arri&egrave;re dans un ensemble
+de structures group&eacute;es dans un m&ecirc;me fichier.
+Les formats de fichiers support&eacute;s par m_edit sont ".coo"
+(le format sp&eacute;cifique de LSD) et ".sdf".
+</P>
+
+<P>
+L'usage de m_edit est tr&egrave;s simple : les atomes sont 
+d&eacute;plac&eacute;s &agrave; l'aide du bouton gauche de la souris. <BR>
+Il n'y a pas encore possibilit&eacute; de s&eacute;lectionner plusieurs atomes,
+d&eacute;sol&eacute;.
+</P>
+
+<P>
+Les mol&eacute;cules sont toutes s&eacute;lectionn&eacute;es 
+par d&eacute;faut, comme indiqu&eacute; par
+leur titre &eacute;crit en noir.
+Le menu Select permet de d&eacute;s&eacute;lectionner
+(titre en rouge)/s&eacute;lectionner des mol&eacute;cules.
+Le statut de la mol&eacute;cule courante peut &ecirc;tre chang&eacute;
+en cliquant sur le titre.
+Les mol&eacute;cules s&eacute;lectionn&eacute;es peuvent 
+&ecirc;tre gard&eacute;es (et les autres supprim&eacute;es)
+en utilisant l'item Keep du menu Select.
+</P>
+
+<P>
+Les mol&eacute;cules sont invers&eacute;es horizontalement ou verticalement
+&agrave; l'aide du menu Arrange. <BR>
+Un buffer (menu Buffer) a &eacute;t&eacute; ajout&eacute;,
+de mani&egrave;re &agrave; ce qu'une situation ant&eacute;rieure
+pr&eacute;alablement sauv&eacute;e (item Save To) puisse &ecirc;tre
+recharg&eacute;e (item Load From).
+</P>
+
+<A NAME = "Structure of data files"></A>
+<H2>Structure des fichiers de donn&eacute;es</H2>
+<P>
+Un fichier de donn&eacute;es contient des commandes et des commentaires.<BR>
+Le nombre de commandes par fichier est limit&eacute; par d&eacute;faut &agrave; 300.<BR>
+Un commentaire est tout ce qui se trouve entre un ";" et la fin de la ligne.
+</P>
+
+<P>
+Une commande est constitu&eacute;e d'un mn&eacute;monique de commande
+g&eacute;n&eacute;ralement suivi de 1 &agrave; 5 param&egrave;tres. <BR>
+Les parties d'une commande sont s&eacute;par&eacute;es par des blancs.
+Les majuscules doivent &ecirc;tre respect&eacute;es. <BR>
+A partir de la version 3.2.0 incluse, la commande <A HREF="#EXIT"><CODE>EXIT</CODE></A>
+peut &ecirc;tre omise.
+Si elle existe, tout ce qui se trouve au del&agrave; est ignor&eacute;.
+</P>
+
+<P>
+Tous les mn&eacute;moniques sont constitu&eacute;s de 4 caract&egrave;res
+alphanum&eacute;riques.<BR>
+Certains se terminent par un ou deux blancs (<CODE>^</CODE>), 
+comme <CODE>CH^^</CODE>. 
+</P>
+
+<P>
+Les mn&eacute;moniques sont suivis par des param&egrave;tres 
+s&eacute;par&eacute;s par des blancs. <BR>
+Les types possibles pour les param&egrave;tres sont d&eacute;crits 
+de la mani&egrave;re suivante :
+</P>
+
+<P>
+<UL>
+<LI>I : un entier positif ou nul.
+<LI>T : -1, 0 ou 1.
+<LI>V : un seul entier positif ou nul 
+ou un ensemble d'entiers positifs ou nuls. <BR>
+Un ensemble est d&eacute;limit&eacute; par des parenth&egrave;ses et les
+ &eacute;l&eacute;ments sont s&eacute;par&eacute;s par
+des blancs. <BR>
+Le nombre d'&eacute;l&eacute;ments est limit&eacute; &agrave; 4 (inclus).
+<LI>A : un symbole atomique : <CODE>C N N5 O S S4 S6 F Cl Br I P P5 Si B X</CODE> seulement.<BR>
+Ce peut aussi &ecirc;tre <CODE>A</CODE> pour la d&eacute;finition des sous-atomes, voir
+au paragraphe <A HREF = "#Substructural information">Informations de sous-structure</A>.
+<LI>L<I>n</I> : la r&eacute;f&eacute;rence &agrave; une liste d'atomes, <I>n</I> est strictement positif. 
+<LI>B : remplace I ou L<I>n</I>
+<LI>S : un ensemble d'entiers positifs s&eacute;par&eacute;s par des blancs. <BR>
+La diff&eacute;rence avec le type V est l'absence de parenth&egrave;ses. <BR>
+Un argument de type S est toujours le dernier de la commande.
+<LI>S<I>n</I> : La r&eacute;f&eacute;rence d'un atome dans la description d'une sous-structure.
+Exemple : <CODE>S1</CODE>.
+<LI>R : un nombre r&eacute;el.
+<LI>F<I>n</I> : la r&eacute;f&eacute;rence d'une sous-structure, 
+<I>n</I> est un entier strictement positif.
+<LI>C : une cha&icirc;ne de caract&egrave;res, encadr&eacute;e 
+par des guillemets (").
+Sa longueur n'est pas limit&eacute;e et elle peut s'&eacute;tendre 
+sur plusieurs lignes.
+<LI>H : un signe optionnel : + ou -.
+<LI>O : un entier positif ou nul optionnel.
+<LI>Z : -1, 0, 1 ou 2.
+</UL>
+</P>
+
+<P>
+Les param&egrave;tres d'une commande sont d&eacute;sign&eacute;s 
+par P1, P2, P3, P4 et P5 suivant leur position
+apr&egrave;s le mn&eacute;monique. <BR>
+La commande <A HREF="#EXIT"><CODE>EXIT</CODE></A> est la seule qui n'ait pas de param&egrave;tre.
+</P>
+
+<A NAME = "Basic commands"></A>
+<H3>Les commandes de base</H3>
+
+<P>
+<UL>
+
+<A NAME = "MULT"></A>
+<LI><CODE>MULT</CODE> I A I I Z : d&eacute;finit le statut des atomes.
+<UL [TYPE = CIRCLE]>
+<LI>P1: num&eacute;ro d'atome, donn&eacute; arbitrairement. 
+L'atome 0 n'est pas d&eacute;fini. <BR>
+Les num&eacute;ros doivent &ecirc;tre compris entre 1 et 100. <BR>
+Laisser des num&eacute;ros inutilis&eacute;s entre 1 et le nombre d'atomes est
+th&eacute;oriquement possible mais n'a pas &eacute;t&eacute; test&eacute;.
+<LI>P2 : symbole de l'atome. 
+Les symboles possibles sont 
+<CODE>C N N5 O S S4 S6 F Cl Br I P P5 Si B X</CODE>. <BR>
+<CODE>S</CODE> est un atome de soufre divalent, <CODE>S4</CODE> est t&eacute;travalent et 
+<CODE>S6</CODE> est hexavalent. <BR>
+<CODE>N5</CODE> et <CODE>P5</CODE> sont des atomes d'azote et de phosphore pentavalents. <BR>
+La valence et la masse de l'atome <CODE>X</CODE> sont d&eacute;finies par une commande <A HREF="#VALE"><CODE>VALE</CODE></A>.
+<LI>P3 : 1, 2 ou 3, pour les atomes hybrid&eacute;s sp, sp<SUP>2</SUP> ou sp<SUP>3</SUP>. <BR>
+<B>Les r&egrave;gles suivantes d&eacute;finissent l'hybridation de l'atome : <BR>
+Un atome impliqu&eacute; dans exactement une double liaison est sp<SUP>2</SUP>. <BR>
+Un atome impliqu&eacute; dans une triple liaison ou deux doubles liaisons est sp. </B>
+<LI>P4 : nombre d'atomes d'hydrog&egrave;ne port&eacute;s par l'atome.
+<LI>P5 : charge &eacute;lectrique formelle : -1, 0, 1 ou 2 (facultative, &eacute;gale &agrave; 0 par d&eacute;faut).
+</UL>
+Exemple : <CODE>MULT 1 C 2 0</CODE>. 
+L'atome 1 un carbone (<CODE>C</CODE>) sp<SUP>2</SUP> 
+(<CODE>2</CODE>) quaternaire (<CODE>0</CODE>).
+<P></P>
+
+<A NAME = "VALE"></A>
+<LI><CODE>VALE</CODE> A I R : d&eacute;finit la valence et la masse des atomes de type X.
+<UL [TYPE = CIRCLE]>
+<LI>P1 : symbole (X).
+<LI>P2 : valence.
+<LI>P3 : masse.
+</UL>
+Remarque : <CODE>VALE</CODE> est incompatible avec la commande <A HREF="#DUPL"><CODE>DUPL 2</CODE></A>.
+<P></P>
+
+<A NAME = "BOND"></A>
+<LI><CODE>BOND</CODE> I I : liaison.
+<UL [TYPE = CIRCLE]>
+<LI>P1 : atome 1.
+<LI>P2 : atome 2.
+</UL>
+<P></P>
+
+<A NAME = "HMQC"></A>
+<LI><CODE>HMQC</CODE> (ou <CODE>HSQC</CODE>) I I : 
+corr&eacute;lation h&eacute;t&eacute;ronucl&eacute;aire &agrave; travers 1 liaison.
+<UL [TYPE = CIRCLE]>
+<LI>P1 : num&eacute;ro de l'atome (non hydrog&egrave;ne).
+<LI>P2 : num&eacute;ro de l'atome d'hydrog&egrave;ne.
+</UL>
+Deux atomes d'hydrog&egrave;ne non &eacute;quivalents
+li&eacute;s au m&ecirc;me atome peuvent porter 
+des num&eacute;ros diff&eacute;rents.<BR>
+<B>Il est utile (mais pas obligatoire) de donner le m&ecirc;me 
+num&eacute;ro &agrave; un atome non-hydrog&egrave;ne
+et &agrave; l'atome (ou aux atomes) d'hydrog&egrave;ne 
+qui sont directement li&eacute;s. </B><BR>
+Exemple : <CODE>HSQC 4 4</CODE>. 
+Le carbone 4 et l'hydrog&egrave;ne 4 sont li&eacute;s ensemble.
+<P></P>
+
+<A NAME = "COSY"></A>
+<LI><CODE>COSY</CODE> V I O O : corr&eacute;lation COSY &agrave; 
+travers <B>trois</B> liaisons.
+<UL [TYPE = CIRCLE]>
+<LI>P1 : num&eacute;ro d'atome d'hydrog&egrave;ne ou un ensemble de tels num&eacute;ros.
+<LI>P2 : num&eacute;ro d'atome d'hydrog&egrave;ne.
+<LI>P3 : longueur de chemin de couplage optionnelle (limite inf&eacute;rieure).
+<LI>P4 : longueur de chemin de couplage optionnelle (limite sup&eacute;rieure).
+</UL>
+La longueur du chemin de couplage peut &ecirc;tre &eacute;tendue par une commande
+<A HREF="#ELIM"><CODE>ELIM</CODE></A>.<BR>
+Si P3 est le seul argument optionnel, il d&eacute;finit la seule longueur possible du chemin de couplage.
+Sa valeur minimale est 3.<BR>
+Si P3 et P4 sont pr&eacute;sents, avec P3 sup&eacute;rieur ou &eacute;gal &agrave; 3 et 
+P4 sup&eacute;rieur ou &eacute;gal &agrave; P3, la longueur du chemin de couplage
+doit se situer dans l'intervalle [P3, P4].
+Si P4 est nul, alors la longueur est sup&eacute;rieure &agrave; P3.<BR>
+Si une commande <A HREF="#ELIM"><CODE>ELIM</CODE></A> est pr&eacute;sente, la longueur du chemin de couplage
+ne pourra pas exc&eacute;der la valeur de la longueur impos&eacute;e par la 
+commande <A HREF="#ELIM"><CODE>ELIM</CODE></A> <B>+ 1</B>.<BR>
+Exemples : 
+<UL>
+<LI> <CODE>COSY 2 9</CODE> : l'hydrog&egrave;ne 2 corr&egrave;le avec l'hydrog&egrave;ne 9.<BR>
+<LI> <CODE>COSY (4 6) 9</CODE> : soit l'hydrog&egrave;ne 4 soit le 6 (ou les deux)
+corr&egrave;le(nt) avec l'hydrog&egrave;ne 9.<BR>
+<LI> <CODE>COSY 5 9 3 4</CODE> : l'hydrog&egrave;ne 5 corr&egrave;le avec l'hydrog&egrave;ne 9 &agrave; 
+travers 3 ou 4 liaisons.
+Cette corr&eacute;lation ne sera jamais &eacute;limin&eacute;e, m&ecirc;me si une commande
+<A HREF="#ELIM"><CODE>ELIM</CODE></A> est pr&eacute;sente.
+</UL>
+<P></P>
+
+<A NAME = "HMBC"></A>
+<LI><CODE>HMBC</CODE> V I O O : corr&eacute;lation 
+h&eacute;t&eacute;ronucl&eacute;aire &agrave; travers <B>2 ou 3</B> liaisons.
+<UL [TYPE = CIRCLE]>
+<LI>P1 : num&eacute;ro d'atome non-hydrog&egrave;ne 
+ou un ensemble de tels num&eacute;ros.
+<LI>P2 : num&eacute;ro d'atome d'hydrog&egrave;ne.
+<LI>P3 : longueur de chemin de couplage optionnelle (limite inf&eacute;rieure).
+<LI>P4 : longueur de chemin de couplage optionnelle (limite sup&eacute;rieure).
+</UL>
+La longueur du chemin de couplage peut &ecirc;tre &eacute;tendue par une commande
+<A HREF="#ELIM"><CODE>ELIM</CODE></A>.<BR>
+Si P3 est le seul argument optionnel, il d&eacute;finit la seule longueur possible du chemin de couplage.
+Sa valeur minimale est 2.<BR>
+Si P3 et P4 sont pr&eacute;sents, avec P3 sup&eacute;rieur ou &eacute;gal &agrave; 2 et 
+P4 sup&eacute;rieur ou &eacute;gal &agrave; P3, la longueur du chemin de couplage
+doit se situer dans l'intervalle [P3, P4].
+Si P4 est nul, alors la longueur est sup&eacute;rieure &agrave; P3.<BR>
+Si une commande <A HREF="#ELIM"><CODE>ELIM</CODE></A> est pr&eacute;sente, la longueur du chemin de couplage
+ne pourra pas exc&eacute;der la valeur de la longueur impos&eacute;e par la 
+commande <A HREF="#ELIM"><CODE>ELIM</CODE></A>.<BR>
+Exemples : 
+<UL>
+<LI> <CODE>HMBC 3 8</CODE> : l'atome 3 corr&egrave;le avec l'hydrog&egrave;ne 8.<BR>
+<LI> <CODE>HMBC (4 5) 8</CODE> : soit l'atome 4 soit le 5 (ou les deux)
+corr&egrave;le avec l'hydrog&egrave;ne 8.<BR>
+<LI> <CODE>HMBC 6 8 2</CODE> : l'atome 6 corr&egrave;le avec l'hydrog&egrave;ne 8 &agrave; travers 2 liaisons.
+<LI> <CODE>HMBC 6 8 4</CODE> : l'atome 6 corr&egrave;le avec l'hydrog&egrave;ne 8 &agrave; travers 4 liaisons.
+Ce n'est possible que si une commande <A HREF="#ELIM"><CODE>ELIM</CODE></A> est pr&eacute;sente.
+<LI> <CODE>HMBC 6 8 2 3</CODE> : l'atome 6 corr&egrave;le avec l'hydrog&egrave;ne 8 &agrave; 
+travers 2 ou 3 liaisons.
+Cette corr&eacute;lation ne sera jamais &eacute;limin&eacute;e, m&ecirc;me si une commande
+<A HREF="#ELIM"><CODE>ELIM</CODE></A> est pr&eacute;sente.
+</UL>
+La somme des nombres de corr&eacute;lations HMBC et COSY est limit&eacute;e
+par d&eacute;faut &agrave; 100.
+<P></P>
+
+<A NAME = "LIST"></A>
+<LI><CODE>LIST</CODE> L<I>n</I> S : d&eacute;finit une liste d'atomes.
+<UL [TYPE = CIRCLE]>
+<LI>P1 : r&eacute;f&eacute;rence de la liste, <I>n</I> est compris entre 1 et 20.
+<LI>P2 : num&eacute;ros d'atomes non-hydrog&egrave;nes.
+</UL>
+D'autres commandes de d&eacute;finition de listes sont d&eacute;finies ci-dessous. <BR>
+Exemple : <CODE>LIST L1 4 6 14</CODE> : La liste L1 contient les atomes 4, 6 et 14.
+<P></P>
+
+<A NAME = "PROP"></A>
+<LI><CODE>PROP</CODE> B I L<I>n</I> H : environnement des atomes
+<UL [TYPE = CIRCLE]>
+<LI>P1 : les atomes r&eacute;f&eacute;rences dans P1 ont exactement P2 voisins dans P3.
+<LI>P2 : nombre exact de voisins. La valeur 0 signifie "tous".
+<LI>P3 : liste de voisins.
+</UL>
+Exemples: 
+<UL>
+<LI> <CODE>PROP L1 0 L2</CODE> : chaque atome de L1 a tous ses voisins dans L2.
+<LI> <CODE>PROP 12 1 L3</CODE> : l'atome 12 a exactement 1 voisin dans L3.
+<LI> <CODE>PROP 12 1 L3 +</CODE> : l'atome 12 a 1 voisin ou plus dans L3. 
+<LI> <CODE>PROP 12 1 L3 -</CODE> : l'atome 12 a 1 voisin ou moins dans L3. 
+<LI> <CODE>PROP 12 0 L3 -</CODE> : l'atome 12 a 0 voisin ou moins (c'est-&agrave;-dire exactement 0) dans L3. 
+</UL>
+<P></P>
+
+<A NAME = "SHIX"></A>
+<LI><CODE>SHIX</CODE> I R: d&eacute;placement chimique des atomes non-hydrog&egrave;ne
+<UL [TYPE = CIRCLE]>
+<LI>P1: num&eacute;ro d'atome (l'atome doit &ecirc;tre d&eacute;fini par une commande <CODE>MULT</CODE>).
+<LI>P2: valeur de d&eacute;placement chimique.
+</UL>
+Exemple: <CODE>SHIX 1 210.5</CODE>: Le d&eacute;placement chimique de l'atome 1 est 210.5 ppm.
+<P></P>
+
+<A NAME = "SHIH"></A>
+<LI><CODE>SHIH</CODE> I R: d&eacute;placement chimique des atomes d'hydrog&egrave;ne
+<UL [TYPE = CIRCLE]>
+<LI>P1: num&eacute;ro d'hydrog&egrave;ne (l'hydrog&egrave;ne doit &ecirc;tre d&eacute;fini par une commande <CODE>HSQC</CODE> ou <CODE>HMQC</CODE>).
+<LI>P2: valeur de d&eacute;placement chimique.
+</UL>
+Exemple: <CODE>SHIH 15 5.4</CODE>: Le d&eacute;placement chimique de l'hydrog&egrave;ne 15 est 5.4 ppm.
+<P></P>
+
+<A NAME = "EXIT"></A>
+<LI><CODE>EXIT</CODE> : fin du jeu de donn&eacute;es. (facultatif)
+<P></P>
+
+</UL>
+</P>
+
+<A NAME = "List definition"></A>
+<H3>D&eacute;finition des listes d'atomes</H3>
+<P>
+Les commandes d&eacute;crites dans cette section permettent 
+de d&eacute;finir des listes
+d'atomes utilis&eacute;es par la commande <A HREF="#PROP"><CODE>PROP</CODE></A>.<BR>
+Elle sont interpr&eacute;t&eacute;es dans l'ordre o&ugrave; 
+elles apparaissent dans le fichier de donn&eacute;es.<BR>
+Elles sont list&eacute;es ci-dessous en fonction de leur nombre d'arguments :
+</P>
+
+<P>
+<UL>
+
+<LI>1 argument.<BR>
+P1, de type L<I>n</I>, est la r&eacute;f&eacute;rence de la liste qui est
+cr&eacute;&eacute;e.
+<UL [TYPE = CIRCLE]>
+<A NAME = "CARB"></A>
+<LI><CODE>CARB</CODE> : les atomes de carbone.
+<A NAME = "HETE"></A>
+<LI><CODE>HETE</CODE> : les atomes qui ne sont pas des carbones (et pas des hydrog&egrave;nes).
+<A NAME = "SP3 "></A>
+<LI><CODE>SP3 </CODE> : les atomes qui n'ont que des liaisons simples 
+(<CODE>SP3^</CODE>, avec un espace final).
+<A NAME = "SP2 "></A>
+<LI><CODE>SP2 </CODE> : les atomes avec exactement une double liaison
+(<CODE>SP2^</CODE>).
+<A NAME = "SP  "></A>
+<LI><CODE>SP  </CODE> : les atomes avec une triple liaison ou deux doubles liaisons
+(<CODE>SP^^</CODE>).
+<A NAME = "FULL"></A>
+<LI><CODE>FULL</CODE> : la liste de tous les atomes.
+<A NAME = "QUAT"></A>
+<LI><CODE>QUAT</CODE> : les carbones li&eacute;s &agrave; 0 atome d'hydrog&egrave;ne.
+<A NAME = "CH  "></A>
+<LI><CODE>CH  </CODE> : les carbones li&eacute;s &agrave; 1 atome d'hydrog&egrave;ne
+(<CODE>CH^^</CODE>).
+<A NAME = "CH2 "></A>
+<LI><CODE>CH2 </CODE> : les carbones li&eacute;s &agrave; 2 atomes d'hydrog&egrave;ne
+(<CODE>CH2^</CODE>).
+<A NAME = "CH3 "></A>
+<LI><CODE>CH3 </CODE> : les carbones li&eacute;s &agrave; 3 atomes d'hydrog&egrave;ne
+(<CODE>CH3^</CODE>).
+<A NAME = "CHAR"></A>
+<LI><CODE>CHAR</CODE> : les atomes charg&eacute;s.
+<A NAME = "CPOS"></A>
+<LI><CODE>CPOS</CODE> : les atomes portant une charge positive.
+<A NAME = "CNEG"></A>
+<LI><CODE>CNEG</CODE> : les atomes portant une charge n&eacute;gative.
+</UL>
+Exemple : <CODE>CARB L5</CODE>. 
+L5 est la liste de tous les carbones de la mol&eacute;cule.
+<P></P>
+
+<LI>2 arguments.<BR>
+P1, de type L<I>n</I>, est la r&eacute;f&eacute;rence 
+de la liste qui est cr&eacute;&eacute;e.
+P2, de type A est un symbole atomique.
+<UL [TYPE = CIRCLE]>
+<A NAME = "ELEM"></A>
+<LI><CODE>ELEM</CODE>: liste de tous les atomes de symbole atomique A.
+</UL>
+Exemple: <CODE>ELEM L2 N</CODE>. L2 est la liste de tous les atomes de type N.
+<P></P>
+P1, de type L<I>n</I>, est la r&eacute;f&eacute;rence 
+de la liste qui est cr&eacute;&eacute;e.
+P2, de type I est un entier qui sert de valeur de comparaison.
+<UL [TYPE = CIRCLE]>
+<LI><CODE>GREQ</CODE> : les atomes dont le num&eacute;ro est sup&eacute;rieur
+ou &eacute;gal &agrave; P2.
+<LI><CODE>LEEQ</CODE> : les atomes dont le num&eacute;ro est inf&eacute;rieur
+ou &eacute;gal &agrave; P2.
+<LI><CODE>GRTH</CODE> : les atomes dont le num&eacute;ro est strictement
+sup&eacute;rieur &agrave; P2.
+<LI><CODE>LETH</CODE> : les atomes dont le num&eacute;ro est strictement
+inf&eacute;rieur &agrave; P2.
+</UL>
+Exemple : <CODE>GREQ L1 10</CODE>.
+L1 est la liste de tous les atomes dont le num&eacute;ro 
+est sup&eacute;rieur ou &eacute;gal &agrave; 10.
+<P></P>
+
+<LI>3 arguments.<BR> 
+P1, de type B, est un num&eacute;ro d'atome ou une liste de num&eacute;ros.
+P2, de type B, est un num&eacute;ro d'atome ou une liste de num&eacute;ros.
+P3, de type L<I>n</I>, est la r&eacute;f&eacute;rence de la liste qui est
+ cr&eacute;&eacute;e.
+<UL [TYPE = CIRCLE]>
+<A NAME = "UNIO"></A>
+<LI><CODE>UNIO</CODE> : P3 est l'union de P1 et P2.
+<A NAME = "INTE"></A>
+<LI><CODE>INTE</CODE> : P3 est l'intersection de P1 et P2.
+<A NAME = "DIFF"></A>
+<LI><CODE>DIFF</CODE> : P3 contient les num&eacute;ros des atomes de P1 qui ne sont
+pas dans P2.
+</UL>
+Exemple : <CODE>UNIO L1 10 L2</CODE>. L2 contient les atomes de L1 et l'atome 10.
+<P></P>
+
+</UL>
+</P>
+
+<A NAME = "Execution control"></A>
+<H3>Contr&ocirc;le de l'ex&eacute;cution</H3>
+
+<P>
+<UL>
+
+<A NAME = "ENTR"></A>
+<LI><CODE>ENTR</CODE> I : imprime l'&eacute;tat du probl&egrave;me avant sa
+r&eacute;solution.
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0 : pas d'impression (d&eacute;faut).
+<LI>P1 = 1 : &eacute;tat actif.
+</UL>
+<P></P>
+
+<A NAME = "HIST"></A>
+<LI><CODE>HIST</CODE> I : imprime le d&eacute;tail des 
+&eacute;tapes de la r&eacute;solution.
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0 : pas d'impression (d&eacute;faut).
+<LI>P1 = 1 : &eacute;tat actif.
+</UL>
+<P></P>
+
+<A NAME = "DISP"></A>
+<LI><CODE>DISP</CODE> I : format de sortie 
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0 : imprime des listes de liaisons.
+<LI>P1 = 1 : le r&eacute;sultat est formatt&eacute; pour outlsd (d&eacute;faut).
+</UL>
+<P></P>
+
+<A NAME = "VERB"></A>
+<LI><CODE>VERB</CODE> I : verbosit&eacute;
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0 : muet (d&eacute;faut).
+<LI>P1 = 1 : &eacute;tat actif.
+<LI>P1 = 2 : tr&egrave;s verbeux.
+</UL>
+<P></P>
+
+<A NAME = "PART"></A>
+<LI><CODE>PART</CODE> I : production des solutions incompl&egrave;tes
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0 : non (d&eacute;faut).
+<LI>P1 = 1 : oui.
+</UL>
+La production des structures incompl&egrave;tes permet de 
+r&eacute;duire le nombre de solutions
+en les groupant en ensembles pr&eacute;sentant une sous-structure 
+commune issue de l'analyse des corr&eacute;lations. <BR>
+Une solution incompl&egrave;te tient compte de toutes les 
+corr&eacute;lations mais poss&egrave;de des
+atomes qui n'ont pas un nombre de liaisons &eacute;gal &agrave;
+leur valence (atomes incomplets). <BR>
+Une solution compl&egrave;te se d&eacute;duit d'une solution 
+incompl&egrave;te par appariement
+de tous les atomes incomplets. <BR>
+Une solution incompl&egrave;te peut toujours &ecirc;tre compl&eacute;t&eacute;e.
+<P></P>
+
+<A NAME = "STEP"></A>
+<LI><CODE>STEP</CODE> I : ex&eacute;cution pas-&agrave;-pas.
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0 : non (d&eacute;faut).
+<LI>P1 = 1 : &eacute;tat actif.
+</UL>
+Un num&eacute;ro d'analyse est indiqu&eacute; pour suivre la
+progression de la r&eacute;solution. <BR>
+Le mode pas-&agrave;-pas n'est pas tr&egrave;s utile, 
+par manque d'une interface graphique int&eacute;gr&eacute;e. <BR>
+Il faut utiliser <A HREF="#VERB"><CODE>VERB 2</CODE></A> avec <CODE>STEP 1</CODE>.
+A chaque pas l'utilisateur peut indiquer une action &agrave; effectuer
+(continuer, finir, abandonner)
+<P></P>
+
+<A NAME = "WORK"></A>
+<LI><CODE>WORK</CODE> I : recherche des solutions.
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0 : LSD lit et interpr&egrave;te le fichier de 
+donn&eacute;es mais ne lance pas la recherche des solutions.
+<LI>P1 = 1 : &eacute;tat actif (d&eacute;faut).
+</UL>
+<P></P>
+
+<A NAME = "MLEV"></A>
+<LI><CODE>MLEV</CODE> I : arr&ecirc;t de l'analyse &agrave; l'&eacute;tape P1.
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0 : rien (d&eacute;faut).
+<LI>P1 = le num&eacute;ro d'&eacute;tape fourni par LSD 
+quand aucune solution n'est produite...
+</UL>
+<P></P>
+
+<A NAME = "DUPL"></A>
+<LI><CODE>DUPL</CODE> I : &eacute;limination des solutions dupliqu&eacute;es.
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0 : des structures dupliqu&eacute;es peuvent &ecirc;tre produites.
+<LI>P1 = 1 : les solutions dupliqu&eacute;es sont &eacute;limin&eacute;es.
+<LI>P1 = 2 : les structures dupliqu&eacute;es sont &eacute;limin&eacute;es (d&eacute;faut).
+</UL>
+<P></P>
+
+<A NAME = "SUBS"></A>
+<LI><CODE>SUBS</CODE> T : validation de sous-structure.
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0 : pas de recherche de sous-structure.
+<LI>P1 = 1 : accepte les solutions qui valident la contrainte
+de sous-strucure (d&eacute;faut).
+<LI>P1 = -1 : accepte les solutions qui ne valident pas la contrainte
+de sous-strucure.
+</UL><P>
+
+<A NAME = "ELIM"></A>
+<LI><CODE>ELIM</CODE> I I : &eacute;limination de corr&eacute;lations HMBC et/ou COSY invalides.
+<UL [TYPE = CIRCLE]>
+<LI>P1 : nombre maximum de corr&eacute;lations &agrave; &eacute;liminer.
+<LI>P2 : nombre maximum de liaisons admissible pour une
+corr&eacute;lation &eacute;limin&eacute;e. <BR>
+La limite sup&eacute;rieure est P2 pour une corr&eacute;lation HMBC
+et <B>P2 + 1 pour une corr&eacute;lation COSY</B>. <BR>
+La valeur 0 signifie "pas de limitation".
+</UL>
+Exemple : <CODE>ELIM 3 5</CODE>. Il est possible d'&eacute;liminer 
+jusqu'&agrave; 3 corr&eacute;lations HMBC et/ou COSY.
+Chacune des corr&eacute;lations HMBC &eacute;limin&eacute;es doit
+correspondre &agrave; un couplage
+<SUP>4</SUP>J (limite inf&eacute;rieure, n&eacute;cessairement) 
+ou <SUP>5</SUP>J (limite sup&eacute;rieure impos&eacute;e).
+Dans le cas d'une corr&eacute;lation COSY, il doit s'agir d'un couplage
+<SUP>5</SUP>J (limite inf&eacute;rieure, n&eacute;cessairement) 
+ou <SUP>6</SUP>J (limite sup&eacute;rieure impos&eacute;e).
+<P></P>
+
+<A NAME = "FILT"></A>
+<LI><CODE>FILT</CODE> I : mode filtrage par sous-structure.
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0 : usage normal de LSD (d&eacute;faut).
+<LI>P1 = 1 : active le mode filtre.
+</UL>
+En mode filtre, LSD utilise les commandes
+<A HREF="#VALE"><CODE>VALE</CODE></A>, <A HREF="#MULT"><CODE>MULT</CODE></A>,
+<A HREF="#BOND"><CODE>BOND</CODE></A>
+et celles qui concernent la d&eacute;finition des sous-structures
+pour rechercher si la structure pr&eacute;sente dans les donn&eacute;es
+contient la sous-structure indiqu&eacute;e.
+Dans ce contexte, la commande "lsd < file > &>/dev/null" constitue
+un appel typique de LSD.
+La valeur retourn&eacute;e par LSD est :
+<UL [TYPE = CIRCLE]>
+<LI>-1 : donn&eacute;es invalides.
+<LI> 0 : la sous-structure n'est pas trouv&eacute;e.
+<LI> 1 : la sous-structure est touv&eacute;e.
+</UL>
+Ce mode a &eacute;t&eacute; cr&eacute;&eacute; pour utiliser 
+LSD &agrave; l'int&eacute;rieur
+d'un shell script ou dans tout contexte o&ugrave; la
+valeur de retour peut &ecirc;tre utilis&eacute;e.
+<P></P>
+
+<A NAME = "CNTD"></A>
+<LI><CODE>CNTD</CODE> I : &eacute;limination des solutions non connexes
+(en plusieurs morceaux)
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0: aucune v&eacute;rification n'est effectu&eacute;e.
+<LI>P1 = 1: seules les solutions connexes (en un seul morceau)
+sont retenues (d&eacute;faut).
+</UL>
+<P></P>
+
+<A NAME = "MAXS"></A>
+<LI><CODE>MAXS</CODE> I : limitation du nombre de structures produites
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0: aucune limitation (d&eacute;faut).
+<LI>P1 > 0: LSD s'arr&ecirc;te apr&egrave;s avoir produit P1 solutions.
+</UL>
+<P></P>
+
+<A NAME = "MAXT"></A>
+<LI><CODE>MAXT</CODE> I : limitation du temps de r&eacute;solution
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0: aucune limitation (d&eacute;faut).
+<LI>P1 > 0: LSD s'arr&ecirc;te apr&egrave;s P1 secondes.
+</UL>
+<P></P>
+
+<A NAME = "CCLA"></A>
+<LI><CODE>CCLA</CODE> I : Contr&ocirc;le l'usage des classes d'atomes de C &eacute;quivalents
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0: aucune classe, toutes les attributions des <SUP>13</SUP>C sont produites (d&eacute;faut).
+<LI>P1 = 1: les atomes de C initialement non li&eacute;s et non correl&eacute;s sont &eacute;quivalents.
+</UL>
+<P></P>
+
+<A NAME = "COUF"></A>
+<LI><CODE>COUF</CODE> C : d&eacute;finit le nom du fichier de comptage des solutions
+<UL [TYPE = CIRCLE]>
+<LI>P1 : nom du fichier de comptage des solutions (d&eacute;faut : solncounter).
+</UL>
+La seule ligne du fichier de comptage des solutions indique le nombre actuel 
+de solutions trouv&eacute;es.
+<P></P>
+
+<A NAME = "STOF"></A>
+<LI><CODE>STOF</CODE> C : d&eacute;finit le nom du fichier d'arr&ecirc;t de lsd
+<UL [TYPE = CIRCLE]>
+<LI>P1 : nom du fichier d'arr&ecirc;t de lsd (d&eacute;faut : stoplsd).
+</UL>
+Si le fichier d'arr&ecirc;t est cr&eacute;&eacute; pendant l'ex&eacute;cution, alors
+lsd est stopp&eacute;.
+<P></P>
+
+<A NAME = "BRUL"></A>
+<LI><CODE>BRUL</CODE> I: test pour les structures anti-Bredt
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0: pas de v&eacute;rification.
+<LI>P1 = 1: les structures anti-Bredt sont exclues (d&eacute;faut).
+</UL>
+<P></P>
+
+</UL>
+
+<A NAME = "Substructural information"></A>
+<H3>Informations de sous-structure</H3>
+<P>
+Des solutions trouv&eacute;es par LSD &agrave; l'issue de l'analyse des
+corr&eacute;lations et de l'appariement des atomes encore incomplets 
+peuvent n'&ecirc;tre s&eacute;lectionn&eacute;es que si elles satisfont
+&agrave; une contrainte de sous-structure.<BR>
+Une contrainte de sous-structure est fournie par des d&eacute;finitions
+de sous-structure et une recette pour combiner les r&eacute;sultats
+de leur recherche dans la structure.<BR>
+Une sous-structure est soit native (d&eacute;finie dans le fichier
+du probl&egrave;me, comme c'est la cas avant la version 3.2.0)
+soit d&eacute;finie de mani&egrave;re externe.<BR>
+Le fichier Data/pinene contient un exemple de codage d'une contrainte
+de sous-structure.
+</P>
+
+<P>
+Une sous-structure est un ensemble de sous-atomes (commande <CODE>SSTR</CODE>)
+connect&eacute;s par des sous-liaisons (commande <CODE>LINK</CODE>)
+et &eacute;ventuellement pr&eacute;-attribu&eacute;s (commande <CODE>ASGN</CODE>).
+</P>
+
+<P>
+<UL>
+
+<A NAME = "SSTR"></A>
+<LI><CODE>SSTR</CODE> S<I>n</I> A V V : statut des sous-atomes.
+<UL [TYPE = CIRCLE]>
+<LI>P1 : num&eacute;ro de sous-atome.
+<LI>P2 : symbole du sous-atome.
+<LI>P3 : &eacute;tat d'hybridation, 
+<CODE>1</CODE> (sp), <CODE>2</CODE> (sp<SUP>2</SUP>) ou <CODE>3</CODE> (sp<SUP>3</SUP>) 
+ou <CODE>(2 3)</CODE> (l'un des deux) ou <CODE>(1 2 3)</CODE> (l'un des trois).
+<LI>P4 : multiplicit&eacute;.
+</UL>
+Exemple : <CODE>SSTR S1 C (2 3) (0 1 2)</CODE>. 
+L'atome 1 de la sous-structure est un carbone, soit sp<SUP>2</SUP> 
+soit sp<SUP>3</SUP>, avec soit 0, soit 1, soit 2 atomes d'hydrog&egrave;ne 
+li&eacute;s &agrave; lui. <BR>
+Il n'y a aucune relation a priori entre la num&eacute;rotation des atomes et celle
+des sous-atomes. <BR>
+P2 peut aussi valoir "A", ce qui signifie "Any".<BR>
+Les sous-atomes de type A peuvent &ecirc;tre identifi&eacute;s &agrave; tout
+atome de la structure.<BR>
+Le nombre de sous-atomes est limit&eacute; par d&eacute;faut &agrave; 60.
+<P></P>
+
+<A NAME = "LINK"></A>
+<LI><CODE>LINK</CODE> S<I>n</I> S<I>n</I> : sous-liaisons.
+<UL [TYPE = CIRCLE]>
+<LI>P1 : premier sous-atome de la sous-liaison.
+<LI>P2 : second sous-atome de la sous-liaison.
+</UL>
+Exemple : <CODE>LINK S1 S2</CODE>. Les sous-atomes 1 et 2 sont li&eacute;s. <BR>
+Le nombre de sous-liaisons est limit&eacute; par d&eacute;faut &agrave; 60.
+<P></P>
+
+<A NAME = "ASGN"></A>
+<LI><CODE>ASGN</CODE> S<I>n</I> I : attribution d'un sous-atome.
+<UL [TYPE = CIRCLE]>
+<LI>P1 : num&eacute;ro de sous-atome.
+<LI>P2 : num&eacute;ro de l'atome correspondant.
+</UL>
+Exemple : <CODE>ASGN S3 5</CODE>. Le sous-atome 3 est identifi&eacute; comme
+ &eacute;tant l'atome 5.
+<P></P>
+
+</UL>
+</P>
+
+<P>
+Une sous-structure externe est identifi&eacute;e par un
+num&eacute;ro de fragment et le nom (chemin) du fichier qui
+contient sa d&eacute;finition.
+Cette derni&egrave;re est cod&eacute;e exactement comme l'est
+une sous-structure native.
+</P>
+
+<P>
+<UL>
+
+<A NAME = "DEFF"></A>
+<LI><CODE>DEFF</CODE> F<I>n</I> C : definit un fragment externe &agrave; partir d'un nom
+de fichier.
+<UL [TYPE = CIRCLE]>
+<LI>P1: num&eacute;ro de fragment, sup&eacute;rieur ou &eacute;gal &agrave; 1.
+<LI>P2: nom (chemin) du fichier o&ugrave; le fragment est d&eacute;fini.
+</UL>
+Exemple: <CODE>DEFF F3 "Filters/ring3"</CODE>. 
+Le fragment F3 est un cycle de trois atomes quelconques.
+<P></P>
+
+<A NAME = "SKEL"></A>
+<LI><CODE>SKEL</CODE> F<I>n</I> C : d&eacute;finit un fragment externe &agrave; partir d'un nom
+de squelette.
+<UL [TYPE = CIRCLE]>
+<LI>P1: num&eacute;ro de fragment, sup&eacute;rieur ou &eacute;gal &agrave; 1.
+<LI>P2: Nom de squelette. <A HREF="#Substructure databases">Plus de d&eacute;tails ici</A>.
+</UL>
+Exemple: <CODE>SKEL F4 "PINANE"</CODE>. 
+Le fragment F4 est le squelette du pinane. <BR>
+A partir de la version 3.4.1, cette commande n'est plus obligatoire.
+Une sous-structure externe peut &ecirc;tre identifiable directement &agrave; partir du nom de squelette sans utiliser de num&eacute;ro de fragment.
+<P></P>
+
+<A NAME = "PATH"></A>
+<LI><CODE>PATH</CODE> C : d&eacute;finit les dossiers o&ugrave; sont stock&eacute;s les squelettes.
+<UL [TYPE = CIRCLE]>
+<LI>P1: chemin d'acc&egrave;s &agrave; un dossier de squelettes
+<A HREF="#Substructure databases">Plus de d&eacute;tails ici.</A>
+</UL>
+Exemple: <CODE>PATH "Filters/TERPENES/MONOTERP"</CODE>. 
+Ajoute Filters/TERPENES/MONOTERP &agrave; la liste des endroits o&ugrave; les squelettes
+seront recherch&eacute;s.
+<P></P>
+
+</UL>
+</P>
+
+<P>
+Les r&eacute;sultats des recherches de sous-structure dans la
+structure courante sont combin&eacute;s pour d&eacute;terminer
+sa validit&eacute; :
+</P>
+
+<P>
+<UL>
+
+<A NAME = "FEXP"></A>
+<LI><CODE>FEXP</CODE> C : expression logique entre fragments.
+<UL [TYPE = CIRCLE]>
+<LI>P1: expression logique qui combine les r&eacute;sultats de recherche
+des fragments.<BR>
+Dans une telle expression, les fragments sont d&eacute;finis chacun par un num&eacute;ro
+pr&eacute;c&eacute;d&eacute; par "F"
+ou directement par un nom de squelette encadr&eacute; par deux guillemets invers&eacute;s "`" 
+(possible uniquement &agrave; partir de la version 3.4.1).<BR>
+Si P1 est une cha&icirc;ne de caract&egrave;res qui commence par ">", la suite
+de la cha&icirc;ne est interpr&eacute;t&eacute;e comme un nom de fichier.
+Ce fichier doit contenir une expression logique qui combine 
+les r&eacute;sultats de recherche des fragments.
+Les d&eacute;finitions de fragments sont reli&eacute;es entre elles
+par les op&eacute;rateurs <CODE>NOT</CODE>, <CODE>AND</CODE>
+et <CODE>OR</CODE> list&eacute;s ici par ordre de pr&eacute;c&eacute;dence
+d&eacute;croissant.
+</UL>
+Exemples : 
+<UL [TYPE = CIRCLE]>
+<LI><CODE>FEXP "NOT F1 AND F2"</CODE>.
+Est &eacute;quivalent &agrave; <CODE>FEXP "(NOT F1) AND F2"</CODE>.<BR>
+<LI><CODE>FEXP "F1 AND F2 OR F3"</CODE>.
+Est &eacute;quivalent &agrave; <CODE>FEXP "(F1 AND F2) OR F3"</CODE>.<BR>
+<LI><CODE>FEXP "`LABDANE` OR `CLERODANE`</CODE>.<BR>
+</UL>
+<P></P>
+
+</UL>
+</P>
+
+<P>
+Les commandes <A HREF="#DEFF"><CODE>DEFF</CODE></A>, <A HREF="#SKEL"><CODE>SKEL</CODE></A>, 
+<A HREF="#PATH"><CODE>PATH</CODE></A> et <A HREF="#FEXP"><CODE>FEXP</CODE></A> implantent
+dans LSD la fonctionnalit&eacute; du filtrage des solutions.<BR>
+S'il n'y a pas de commande <CODE>FEXP</CODE> dans le fichier,
+la sous-structure native est seule prise en compte, si elle existe.<BR>
+Si la commande <CODE>FEXP</CODE> est pr&eacute;sente, la sous-structure native
+est accessible via <CODE>F0</CODE> comme si une commande 
+<CODE>DEFF F0 "..."</CODE> existait.
+Si aucune sous-structure native n'est d&eacute;finie, <CODE>F0</CODE>
+est la sous-structure vide, celle qui est toujours pr&eacute;sente
+dans une structure.<BR>
+Si le param&egrave;tre de <A HREF="#SUBS"><CODE>SUBS</CODE></A> vaut 0, 
+aucune recherche de sous-structure n'est effectu&eacute;e.
+S'il vaut -1, le r&eacute;sultat final de l'&eacute;valuation de
+l'expression logique fournie par la commande <CODE>FEXP</CODE> est invers&eacute;.
+</P>
+
+<A NAME = "Substructure databases"></A>
+<P>
+La commande <A HREF="#SKEL"><CODE>SKEL</CODE></A> associe un num&eacute;ro de fragment  
+(comme <A HREF="#DEFF"><CODE>DEFF</CODE></A>)
+avec un nom de squelette, comme PINANE, qui fait r&eacute;f&eacute;rence &agrave; une sous-structure
+compatible avec la mol&eacute;cule de pin&egrave;ne, comme bien d'autres mol&eacute;cules.<BR>
+LSD recherche dans une base de squelettes fournie par l'utilisateur un fichier
+qui d&eacute;crit le squelette.
+En cas de succ&egrave;s, le num&eacute;ro de fragment est alors associ&eacute; avec ce fichier.<BR>
+L'emplacement par d&eacute;faut de la base de squelettes est le dossier Filters qui est fourni avec LSD.
+Une premi&egrave;re commande <A HREF="#PATH"><CODE>PATH</CODE></A>
+remplace l'emplacement par d&eacute;faut par celui indiqu&eacute;. 
+Les commandes <CODE>PATH</CODE> suivantes d&eacute;finissent d'autres emplacements possibles o&ugrave;
+des d&eacute;finitions de squelettes sont recherch&eacute;es.<BR>
+Chaque fois qu'une commande <A HREF="#SKEL"><CODE>SKEL</CODE></A> est analys&eacute;e tous
+les dossiers indiqu&eacute;s sont explor&eacute;s ainsi que tous leurs sous-dossiers inclus.
+Chaque fois qu'un fichier nomm&eacute; toc (Table of Contents) est trouv&eacute;
+au cours de cette exploration, son contenu est analys&eacute;.
+Si le nom du squelette recherch&eacute; est trouv&eacute; &agrave; la ligne <I>n</I> d'un fichier toc,
+alors un fichier nomm&eacute; file<I>n</I> doit exister dans le m&ecirc;me dossier et doit &ecirc;tre
+le fichier de description de sous-structure qui correspond au squelette recherch&eacute;.<BR>
+La commande <A HREF="#PATH"><CODE>PATH</CODE></A> n'a pas d'influence sur le
+comportement de la commande <A HREF="#DEFF"><CODE>DEFF</CODE></A>.
+Un fichier toc ne doit contenir qu'un nom de squelette par ligne et un nom ne doit
+contenir ni blanc ou tabulation.<BR>
+Un convertisseur nomm&eacute; <A HREF="#Creating substructure files with mol2ab">mol2ab</A>
+est disponible pour traduire des fichiers MDL .mol en fichiers de description de sous-structure.<BR>
+</P>
+
+<P>
+LSD est fourni avec une collection non-exhaustive de <A HREF="SKELETON_FR.html">squelettes</A>
+de substances naturelles.
+L'ensemble de ces squelettes est pr&eacute;sent sous forme de fichiers MDL .mol dans le dossier MOL. 
+L'utilisateur est libre de les utiliser pour cr&eacute;er des fichiers de sous-structure 
+&agrave; sa convenance &agrave; l'aide de <A HREF="#Creating substructure files with mol2ab">mol2ab</A>.
+Le r&eacute;sultat de la conversion de tous les fichiers pr&eacute;sents dans le dossier MOL
+est rang&eacute; dans le dossier Filters/TERPENES.
+</P>
+
+<A NAME = "Creating substructure files with mol2ab"></A>
+<H2>Cr&eacute;er des fichiers de sous-structure avec mol2ab</H2>
+<P>
+Le programme mol2ab convertit des structures au format .mol en sous-structures pour LSD.<BR>
+L'utilisateur peut convertir les fichiers .mol distribu&eacute;s avec LSD ou ses propres 
+fichiers &eacute;dit&eacute;s &agrave; l'aide d'un logiciel usuel de dessin de structures.<BR>
+Les r&egrave;gles suivantes s'appliquent durant la conversion :
+</P>
+
+<P>
+<UL>
+<LI>Tout atome d'hydrog&egrave;ne de la structure peut &ecirc;tre substitu&eacute;
+<LI>Toute liaison simple peut &ecirc;tre transform&eacute;e en double liaison
+<LI>Toute double liaison peut &ecirc;tre transform&eacute;e en triple liaison
+<LI>Une triple liaison reste une triple liaison
+<LI>La nature chimique des atomes est pr&eacute;serv&eacute;e
+</UL>
+</P>
+
+<P>
+Usage: <BR>
+<CODE><FONT COLOR = #FF00FF> prompt$ </FONT> mol2ab Dossier fichier-pilote</CODE>
+</P>
+
+<P>
+Chaque ligne du fichier-pilote doit contenir deux champs :
+<UL>
+<LI>le premier champ est le nom de squelette qui sera associ&eacute; au fichier .mol
+<LI>le second champ est le nom d'un fichier .mol qui doit &ecirc;tre pr&eacute;sent dans le dossier courant
+</UL>
+Le dossier "Dossier" doit exister et &ecirc;tre vide.
+Il sera rempli avec les fichiers .mol initiaux (renomm&eacute;s en file1.mol ... file<I>n</I>.mol) et
+avec les fichiers de sous-structure &eacute;quivalents (file1 ... file<I>n</I>), o&ugrave; 
+<I>n</I> est le nombre de lignes dans le fichier-pilote.<BR>
+Un fichier toc est &eacute;galement cr&eacute;&eacute; afin que LSD puisse retrouver les fichiers 
+de sous-structure &agrave; partir des noms de squelettes.
+</P>
+
+<P>
+Exemple: La fabrication de Filters/MONOTERP.<BR>
+Les commandes qui suivent sont &eacute;crites pour un syst&egrave;me de type UNIX.
+Le dossier courant de l'interpr&eacute;teur de commandes est initialement celui de LSD.<BR>
+Sous windows il suffit de remplacer les <CODE>/</CODE> par des <CODE>\</CODE>.
+<PRE CLASS="CODE">
+<FONT COLOR = #FF00FF> prompt$ </FONT> cd MOL
+<FONT COLOR = #FF00FF> prompt$ </FONT> cd Monoterp_mol
+<FONT COLOR = #FF00FF> prompt$ </FONT> mkdir MONOTERP
+<FONT COLOR = #FF00FF> prompt$ </FONT> ../../mol2ab MONOTERP ../monoterp_mol.txt
+</PRE>
+</P>
+
+<A NAME = "Result processing with outlsd"></A>
+<H2>Traiter les r&eacute;sultats avec outlsd</H2>
+<P>
+Pour utiliser outlsd, il ne faut pas que le fichier de donn&eacute;es contienne
+la commande <CODE>DISP 0</CODE>. <BR>
+Le programme outlsd lit sur l'entr&eacute;e standard et &eacute;crit
+sur la sortie standard. <BR>
+Il prend comme argument un entier entre 1 et 10.
+</P>
+
+<P>
+<CODE><FONT COLOR = #FF00FF> prompt$ </FONT>
+outlsd 7 < pinene.sol > pinene.sdf</CODE>
+</P>
+
+<P>
+Selon la valeur de l'argument <I>n</I>, le r&eacute;sultat
+produit par outlsd contient
+</P>
+
+<P>
+<UL>
+
+<LI><I>n</I> = 1 : des listes de paires d'atomes li&eacute;s
+(sans grand int&eacute;r&ecirc;t)
+<LI><I>n</I> = 5 : des cha&icirc;nes SMILES 
+<LI><I>n</I> = 6 : des coordonn&eacute;es 2D pour
+<A HREF = "#Result viewing with genpos">genpos</A> et 
+<A HREF = "#Drawing improvement">m_edit</A> (extension .coo)
+<LI><I>n</I> = 7 : des mol&eacute;cules au format SDF (extension .sdf) 
+pour certains produits propri&eacute;taires et
+<A HREF = "#Drawing improvement">m_edit</A>
+<LI><I>n</I> = 8 : des coordonn&eacute;es 3D fantaisistes au format SDF (extension .sdf), sans H
+<LI><I>n</I> = 9 : des coordonn&eacute;es 3D fantaisistes au format SD (extension .sdf), H explicites
+<LI><I>n</I> = 10 : au format SDF sans coordonn&eacute;es (extension .sdf), sans H
+
+</UL>
+</P>
+
+<P>
+Les options 2, 3 et 4 ne sont plus disponibles &agrave; partir de la version 3.4.1.
+</P>
+
+<A NAME = "Result viewing with genpos"></A>
+<H2>Visualiser les r&eacute;sultats avec genpos</H2>
+<P>
+L'option 6 de outlsd produit un texte qui commence avec DRAW sur la ligne 1,
+et dans un format utilis&eacute; par le programme genpos.
+Genpos lit sur l'entr&eacute;e standard et &eacute;crit
+sur la sortie standard des instructions
+en langage Postscript.
+</P>
+
+<P>
+<CODE><FONT COLOR = #FF00FF> prompt$ </FONT> genpos < pinene.coo > pinene.ps</CODE>
+</P>
+
+<P>
+Le fichier r&eacute;sultant (pinene.ps) peut &ecirc;tre ouvert par des
+visionneuses Postscript pour &ecirc;tre analys&eacute; et imprim&eacute;.
+</P>
+
+<P>
+<I>Copyright(C)2000 CNRS-UMR 7312-Jean-Marc Nuzillard</I>
+</P>
+
+</BODY>
+</HTML>
+ 

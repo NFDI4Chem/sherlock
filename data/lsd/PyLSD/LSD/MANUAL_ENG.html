@@ -1,0 +1,1206 @@
+<HTML>
+<HEAD>
+<TITLE> The LSD manual
+</TITLE>
+</HEAD>
+<BODY>
+
+<CENTER>
+<H1>LSD 3.5.2</H1>
+</CENTER>
+
+
+<I>Last modified: April, 26<SUP>th</SUP> 2022.</I>
+
+<H2>Table of contents</H2>
+<UL>
+<A HREF = "#From spectra to data">From spectra to data</A><BR>
+<A HREF = "#Command interpreter">Command interpreter</A><BR>
+<A HREF = "#Quick start">From data to structures</A><BR>
+<A HREF = "#Very quick start">Very quick start</A><BR>
+<A HREF = "#Drawing improvement">Drawing improvements</A><BR>
+<A HREF = "#Structure of data files">Data file structure</A><BR>
+<UL>
+<A HREF = "#Basic commands">Basic commands</A><BR>
+<A HREF = "#List definition">List definition</A><BR>
+<A HREF = "#Execution control">Execution control</A><BR>
+<A HREF = "#Substructural information">Substructural information</A><BR>
+</UL>
+<A HREF = "#Creating substructure files with mol2ab">Creating substructure files with mol2ab</A><BR>
+<A HREF = "#Result processing with outlsd">Result processing with outlsd</A><BR>
+<A HREF = "#Result viewing with genpos">Result viewing with genpos</A><BR>
+</UL>
+
+<A NAME = "From spectra to data"></A>
+<H2>From spectra to data</H2>
+<P>
+The goal of LSD is to help the user to propose one or more molecular structures 
+from data that is mainly extracted from 2D NMR spectra.
+Recording HMQC (or HSQC), HMBC and COSY spectra is the pre-requisite for LSD use.
+LSD has no knowledge of chemical shifts.
+There is no way to introduce this kind of data, for any nucleus type.
+LSD uses the chemical shift and coupling information provided by the user that 
+are necessary to establish carbon hydridization state or to impose a
+particular neighborhood to a given atom.
+</P>
+
+<P>
+NMR data coding for LSD may initially seem awkward to beginners.
+The following paragraphs are intended to help them.
+A useful documentation source may be found in the examples in the Data folder.
+A data file for LSD is a text file that contains commands, each being
+followed by one or more parameters.
+The most useful commands will be first introduced, but a thorough command
+set description is given in the
+<A HREF = "#Structure of data files">Data file structure</A> paragraph.
+A text-type user interface may seem old-fashioned, but it is sometimes
+easier to modify a text than to navigate though menus and sub-menus whose
+function is not always totally explicit.
+</P>
+
+<P>
+The first step in the elucidation of an unknown molecular structure is to
+find its elemental formula and to determine the status of all
+non-hydrogen atoms.
+The status consists of an index, a chemical symbol, a hybridization state
+(sp, sp<SUP>2</SUP> or sp<SUP>3</SUP>), a number of attached hydrogen atoms
+and a charge.
+Defining the status of all atoms is a strong constraint for the user.
+The status of heteroatoms is not always easy to define, mainly when more
+than one of their type is present.
+Even for carbon atoms, the chemical shift value is not sufficient to
+non-ambiguously deduce the hydridization state.
+More than a single data set must then be written and tested.
+More flexibility to status definition will be given in the near future,
+but for the moment the user has to cope with the present capabilities of LSD. 
+</P>
+
+<P>
+Atom indexing may be arbitrary.
+A recommended procedure is the indexing of carbons from 1 in decreasing
+order of their <SUP>13</SUP>C chemical shift value.
+Heteroatoms, such as nitrogen or oxygen, receive the following numbers as indexes.
+Carbon indexes are then reported in the 1D projections around the
+2D HMQC and HMBC spectra.
+It is possible to have another atom type (X) provided that its valence is defined by the user.
+</P>
+
+<P>
+The command that defines an atom status is <A HREF="#MULT"><CODE>MULT</CODE></A>.
+Uppercase letters need to be uppercase.
+<CODE>MULT</CODE> is followed by the atom index, the chemical symbol, 1, 2 or 3 for
+the hydridization state (sp, sp<SUP>2</SUP> or sp<SUP>3</SUP>), 
+the multiplicity (number of bound hydrogen atoms) and the charge (facultative).
+The command <CODE>MULT 1 C 2 0</CODE> says that atom 1 is a 
+quaternary (<CODE>0</CODE>) sp<SUP>2</SUP> (<CODE>2</CODE>) carbon (<CODE>C</CODE>).
+The data file contains as many <CODE>MULT</CODE> lines as non-hydrogen
+atoms in the molecule.
+</P>
+
+<P>
+The following step is the indexing of hydrogen atoms.
+Again, the indexes may be given arbitrarily, but it is handy to
+give the same index to the proton and to the carbon atom that is attached to it.
+The HMQC (or HSQC) spectrum matches carbon and proton indexation schemes.
+Two inequivalent hydrogen atoms within a methylene group get the same index.
+The hydrogen indexes are then copied in the projections around the 2D
+COSY and HMBC spectra.
+A correlation in a 2D spectrum is characterized by the type of spectrum,
+the index of the atom in dimension 1 (carbon index in HMQC and HMBC spectra),
+and the index of the atom in dimension 2 (always a hydrogen atom index).
+The command <A HREF="#HMQC"><CODE>HMQC 4 4</CODE></A> indicates that carbon 4 and hydrogen 4
+are bound together.
+The HMQC and HSQC commands are equivalent.
+Commands <A HREF="#HMBC"><CODE>HMBC</CODE></A> and <A HREF="#COSY"><CODE>COSY</CODE></A>
+are coded in the same way.
+</P>
+
+<P>
+Any easily deduced bond must be given to LSD through a <A HREF="#BOND"><CODE>BOND</CODE></A>
+command. 
+It takes the indexes of the bound atoms as parameters.
+If carbon 1 is that of a keto group and if there is an sp<SUP>2</SUP> oxygen 22,
+the command <CODE>BOND 1 22</CODE> establishes the bond between atoms 1 and 22. 
+</P>
+
+<P>
+Unless specified, the order of the commands within a data file has no importance.
+The text that follows the <A HREF="#EXIT"><CODE>EXIT</CODE></A> command is ignored.
+Apart from purely NMR derived commands, other commands are needed for
+<A HREF = "#Execution control">execution control</A>.
+One should prefer to group them at the beginning of the data file.
+<CODE>MULT</CODE>,
+<CODE>HMQC</CODE>, <CODE>COSY</CODE>, <CODE>HMBC</CODE>, 
+and <CODE>BOND</CODE> commands
+constitute the basic part of LSD data files.
+</P>
+
+<P>
+A less trivial part in the writing of LSD data files is the definition
+of atom properties and of the associated lists.
+An atom property (<A HREF="#PROP"><CODE>PROP</CODE></A> command) indicates for an atom 
+or for all atoms in a list the number of neighbors that must
+be members of another atom list.
+The number 0 means "all".
+For example, the chemical shift of the carbon atoms indexed 8, 9 and 10 is about
+15 ppm.
+The hydrogen atoms indexed 8, 9 and 10 are those of methyl groups
+appearing at about 1 ppm as singlets.
+Carbons 8, 9 and 10 are most probably bound only to quaternary carbons.
+You need to build two lists in order to code this constraint with LSD.
+The first list contains the atoms 8, 9 and 10 while the second one contains
+all the quaternary carbons.
+An atom list is described by its index and its content.
+The content is either explicitely defined (giving the index
+of all atoms within the list) or using atom status.
+It is also possible to combine lists according to the operations defined
+in the set theory.
+Back to the example, <A HREF="#LIST"><CODE>LIST L1 8 9 10</CODE></A> defines list 1 and puts atoms
+8, 9 and 10 in it.
+<A HREF="#QUAT"><CODE>QUAT L2</CODE></A> defines list 2 and puts all quaternary carbons in it.
+Once L1 and L2 are defined, the constraint on atoms 8, 9 and 10
+is coded by the <A HREF="#PROP"><CODE>PROP L1 0 L2</CODE></A> command.
+It could have also been possible to write <CODE>PROP L1 1 L2</CODE>, because
+a methyl group carbon always has a single neighbor.
+List and property definition commands are treated in the order
+they are written in the data file.
+Changing their order can change their meaning.
+</P>
+
+<P>
+A common temptation for beginners is spectra over-interpretation,
+meaning that non-significant information is introduced.
+Inconsistent or wrong data leads LSD to fail, producing
+a message that indicates which is the deepest analysis level reached 
+(the so much hated "max stack level: " message).
+Introducing <I><SUP>n</SUP>J</I> COSY or HMBC 
+correlations with <I>n</I> greater than 3 also leads LSD to fail,
+unless otherwise specified (see below).
+In order to avoid this unpleasant situation, the weakest COSY and HMBC
+correlations should be first written as comments, by putting
+a semicolon at the beginning of the corresponding commands.
+If the number of found solutions is too big, it's time to remove
+semicolons to impose more property or correlation constraints to the problem.
+</P>
+
+<P>
+<B>New with version 3.1.0: Elimination of invalid HMBC correlations</B><BR>
+Two reasons may be invoked if the analysis of a HMBC correlation does not lead
+to a solution. Either the present state of the molecule is not compatible
+with the analyzed correlation (case 1), or the correlation itself is invalid (case 2).
+The latter case arises either by accident 
+(spectral artefact or typing error, for example) or
+because the correlation arises from a coupling through more than three bonds.
+In case 1, the resolution mecanism will be able to correct the structure state
+to produce a solution if the entire data set is correct.
+In case 2, no correction can lead to a solution. The invalid correlation
+can now be eliminated to check whether it is 
+responsable for the resolution failure. 
+</P>
+
+<P>
+The <A HREF="#ELIM"><CODE>ELIM</CODE></A> command provides the maximum number of correlations it
+is possible to eliminate, so that at least one solution is produced.
+The <CODE>ELIM</CODE> command also provides the 
+maximum allowed number of bonds between
+the atoms in all eliminated correlations. 
+The latter constraint may be deactivated
+for the detection of accidentally invalid correlations. 
+</P>
+
+<P>
+This brief overview of LSD commands will allow users to be more
+familiar with the writing of data files.
+However, reading of <A HREF = "#Structure of data files">
+Data file structure</A> is a mandatory step in the learning
+of the LSD command language.
+</P>
+
+<A NAME = "Command interpreter"></A>
+<H2>Command interpreter</H2>
+<P>
+In order to process the content of an LSD input file by typing system commands,
+Linux and Mac users need to open a "Terminal" application,
+which is named "Command prompt" in Windows MSDOS.
+</P>
+<P>
+The syntax of system commands may differ between Linux/Mac and MSDOS.
+</P>
+<P>
+Both command interpreters indicate that the user may start to type
+a command by displaying a character string named "prompt".
+</P>
+<P>
+In the following sections,
+<CODE><FONT COLOR = #FF00FF> UNIXprompt$ </FONT> </CODE>
+is the Linux/Mac prompt (Unix-type systems) and
+<CODE><FONT COLOR = #FF00FF> DOSprompt$ </FONT> </CODE>
+is the Windows prompt. The commands that follow the simple
+<CODE><FONT COLOR = #FF00FF> prompt$ </FONT> </CODE>
+are valid for the two types of command interpreter.
+</P>
+<P>
+In both cases, use the <CODE>cd</CODE> command to set the LSD executable in the current
+directory.
+</P>
+<P>
+The Linux/Mac users need to have the current directory (named .) in the list
+of directories in which the Terminal searches the executable files.
+This can temporarily be achieved by typing
+</P>
+<P>
+<CODE><FONT COLOR = #FF00FF> UNIXprompt$ </FONT> export PATH=.:$PATH</CODE><BR>
+</P>
+
+<A NAME = "Quick start"></A>
+<H2>From data to structures</H2>
+<P>
+A data file named "pinene" is provided in the Data folder.<BR>
+Running LSD on it is simple achieved using:
+</P>
+
+<P>
+<CODE><FONT COLOR = #FF00FF> UNIXprompt$ </FONT> cp Data/pinene .</CODE><BR>
+<CODE><FONT COLOR = #FF00FF> DOSprompt$ </FONT> copy Data\pinene.lsd .</CODE>
+</P>
+<P>
+<CODE><FONT COLOR = #FF00FF> UNIXprompt$ </FONT> lsd pinene</CODE><BR>
+<CODE><FONT COLOR = #FF00FF> DOSprompt$ </FONT> lsd pinene.lsd</CODE>
+</P>
+
+<P>
+LSD writes that 1 solution is found.<BR>
+A file named pinene.sol is created, containing atom connectivity information.<BR>
+Any data file named abc or abc.xyz produces a solution file named abc.sol
+or abc.xyz.sol. <BR>
+A 2D coordinate file pinene.coo can then be generated:
+</P>
+
+<P>
+<CODE><FONT COLOR = #FF00FF> prompt$ </FONT> outlsd 6 < pinene.sol > pinene.coo</CODE>
+</P>
+
+<P>
+The outlsd program creates 2D coordinates from connectivities. <BR>
+The result is viewed using a Postscript&reg; previewer. <BR>
+Postscript drawings are first produced with:
+</P>
+
+<P>
+<CODE><FONT COLOR = #FF00FF> prompt$ </FONT> genpos < pinene.coo > pinene.ps</CODE>
+</P>
+
+<P>
+and displayed on screen using:
+</P>
+
+<P>
+<CODE><FONT COLOR = #FF00FF> prompt$ </FONT> xpsview pinene.ps</CODE>
+</P>
+
+<P>
+if xpsview is the currently available Postscript display program
+(might be open, gv or gsview64).<BR>
+A double click on the pinene.ps file icon shows the result as well.
+</P>
+
+
+<A NAME = "Very quick start"></A>
+<H2>Very quick start</H2>
+<P>
+The command:
+</P>
+
+<P>
+<CODE><FONT COLOR = #FF00FF> prompt$ </FONT> solve pinene</CODE>
+</P>
+
+<P>
+does the whole job in one shot: structure resolution, creation and display of the
+structure drawings. <BR>
+It is generally not a good idea to proceed this way with a new data set. <BR>
+However, this can be done once the data set
+runs from the command line without any error
+(see <A HREF = "#Quick start">From data to structures</A>).
+</P>
+
+<A NAME = "Drawing improvement"></A>
+<H2>Drawing improvement</H2>
+<P>
+The coordinates generated by outlsd sometime produce drawings that
+are difficult to read. <BR>
+A simple program named m_edit was written in order to interactively
+improve the quality of the structure drawings. <BR>
+You need to have Tcl/Tk and the <CODE>wish</CODE> command
+installed in order to run M_EDIT 
+(version 8.0 or later). <BR>
+The command
+</P>
+
+<P>
+<CODE><FONT COLOR = #FF00FF> prompt$ </FONT> m_edit</CODE>
+</P>
+
+<P>
+launches m_edit. <BR>
+The File menu allows to read and save files, and to exit from
+the program.
+The View menu is used to navigate forward and backward 
+through a set of structures within a file.
+The supported file formats are .coo (the LSD-specific format)
+and .sdf. 
+</P>
+
+<P>
+Using m_edit is very intuitive: atoms are moved using the left mouse button. <BR>
+There is no multiple atom selection mechanism available yet, sorry.
+</P>
+
+<P>
+Molecules are selected by default, as shown by their title, written in black.
+The Select menu allow to unselect(title in red)/reselect(title in black)
+molecules.
+The status of the current molecule can be changed by clicking on the title.
+Selected molecules can be kept (and the unselected one removed) using
+the Keep item of the Select menu.
+</P>
+
+<P>
+Molecule drawings can be horizontally and vertically flipped
+using the Arrange menu. <BR>
+A buffer (Buffer menu) was added, so that a modified molecule set (item Save To)
+can be retrieved (item Load From).<BR>
+</P>
+
+<A NAME = "Structure of data files"></A>
+<H2>Data file structure</H2>
+<P>
+A data file is made of commands and comments. <BR>
+The number of commands is limited to 300. <BR>
+A comment is everything between a ";" and the end of the line.
+</P>
+
+<P>
+A command is made of a command mnemonic, 
+generally followed by 1 to 5 parameters. <BR>
+All parts of a command are separated by spaces.
+Commands are case-sensitive. <BR>
+From version 3.2.0 included, the <CODE>EXIT</CODE> command may be omitted.
+If there, everything beyond it is ignored.
+</P>
+
+<P>
+All command mnemonics are made of 4 alphanumeric characters. <BR>
+Some of them end with space characters (<CODE>^</CODE>), 
+such as <CODE>CH^^</CODE>. 
+</P>
+
+<P>
+Mnemonics are followed by parameters, separated by blanks. <BR>
+The parameter types are described using 
+the following symbols: 
+</P>
+
+<P>
+<UL>
+
+<LI>I: a positive integer (0 included).
+<LI>T: -1, 0, or 1.
+<LI>V: a single positive (0 included) integer
+or a set of positive (0 included) integers.<BR>
+A set is delimited by parentheses and the items are separated by blanks. <BR>
+The number of items is 4 or less.
+<LI>A: an atom symbol : <CODE>C N N5 O S S4 S6 F Cl Br I P P5 Si B X</CODE> only.<BR>
+It may also be <CODE>A</CODE> in sub-atom definition, see the
+<A HREF = "#Substructural information">Substructural information</A> paragraph.
+<LI>L<I>n</I>: an atom's list reference, <I>n</I> is strictly positive. 
+<LI>B: stands for I or L<I>n</I>.
+<LI>S: a set of positive integers separated by spaces. <BR>
+The difference with V-type parameters is the absence of parenthesis. <BR>
+A S-type argument is always the last one in the command line.
+<LI>S<I>n</I> : an atom's reference number, according to substructure
+numbering. Example: <CODE>S1</CODE>.
+<LI>R: a real number.
+<LI>F<I>n</I>: a substructure reference number, <I>n</I> is strictly positive.
+<LI>C: a character string, enclosed by double quotes ("). Its length is not
+limited and it may extend over many lines.
+<LI>H: an optional sign: either + or -.
+<LI>O: an optional positive (0 included) integer.
+<LI>Z: -1, 0, 1 or 2.
+
+</UL>
+</P>
+
+<P>
+The parameters of a command are successively referenced by P1, P2, P3, P4 and P5. <BR>
+The <A HREF="#EXIT"><CODE>EXIT</CODE></A> command is the only one without any parameter.
+</P>
+
+<A NAME = "Basic commands"></A>
+<H3>Basic commands</H3>
+<P>
+<UL>
+
+<A NAME = "MULT"></A>
+<LI><CODE>MULT</CODE> I A I I Z: defines atom status.
+<UL [TYPE = CIRCLE]>
+<LI>P1: atom number, arbitrary. Atom 0 is undefined. <BR>
+Atoms must be numbered between 1 and 100. <BR>
+Skipping numbers is theoretically possible but was not tested.
+<LI>P2: atomic symbol. Valid atomic symbols are 
+<CODE>C N N5 O S S4 S6 F Cl Br I P P5 Si B X</CODE>. <BR>
+<CODE>S</CODE> is a divalent sulfur atom, <CODE>S4</CODE> is a tetravalent one 
+and <CODE>S6</CODE> is hexavalent. <BR>
+<CODE>N5</CODE> and <CODE>P5</CODE> are pentavalent nitrogen and phosphorus atoms. <BR>
+The valence and mass of atom <CODE>X</CODE> are defined using the <A HREF="#VALE"><CODE>VALE</CODE></A> command.
+<LI>P3: 1, 2 or 3, for sp, sp<SUP>2</SUP> and sp<SUP>3</SUP> atoms. <BR>
+<B>To set the hybridization state, the following rules apply: <BR>
+An atom involved in exactly one double bond is sp<SUP>2</SUP>. <BR>
+An atom involved in a triple bond or two double bonds is sp. </B>
+<LI>P4: number of hydrogen atoms that are bonded to the atom.
+<LI>P5: formal electric charge: -1, 0, 1 or 2 (facultative, equal to 0 by default).
+</UL>
+Example: <CODE>MULT 1 C 2 0</CODE>. 
+Atom 1 is a quaternary (<CODE>0</CODE>) sp<SUP>2</SUP> (<CODE>2</CODE>) 
+carbon (<CODE>C</CODE>).
+<P></P>
+
+<A NAME = "VALE"></A>
+<LI><CODE>VALE</CODE> A I R: sets valence and mass of atom X.
+<UL [TYPE = CIRCLE]>
+<LI>P1: symbol (X).
+<LI>P2: valence.
+<LI>P3: mass.
+</UL>
+Remark: <CODE>VALE</CODE> is not compatible with the <A HREF="#DUPL"><CODE>DUPL 2</CODE></A> command.
+<P></P>
+
+<A NAME = "BOND"></A>
+<LI><CODE>BOND</CODE> I I: bond
+<UL [TYPE = CIRCLE]>
+<LI>P1: atom 1.
+<LI>P2: atom 2.
+</UL>
+<P></P>
+
+<A NAME = "HMQC"></A>
+<LI><CODE>HMQC</CODE> (or <CODE>HSQC</CODE>) I I: heteronuclear correlation through 1 bond
+<UL [TYPE = CIRCLE]>
+<LI>P1: non hydrogen atom.
+<LI>P2: hydrogen atom.
+</UL>
+Two inequivalent hydrogen atoms bound to the same atom may have different
+numbers. <BR>
+<B>It is generally useful (but not mandatory) to give identical numbers to a 
+non-hydrogen atom and to the hydrogen atom(s) that is (are) directly bound.
+</B><BR>
+Example: <CODE>HSQC 4 4</CODE>. Carbon 4 and hydrogen 4 are bound together.
+<P></P>
+
+<A NAME = "COSY"></A>
+<LI><CODE>COSY</CODE> V I O O: <B>three</B> bond COSY correlation
+<UL [TYPE = CIRCLE]>
+<LI>P1: hydrogen atom 1.
+<LI>P2: hydrogen atom 2.
+<LI>P3: optional coupling path length, lower limit.
+<LI>P4: optional coupling path length, upper limit.
+</UL>
+The length of the coupling path may be extended if an <A HREF="#ELIM"><CODE>ELIM</CODE></A> command is present.<BR>
+When P3 is the only present optional argument, it defines the only possible coupling path length.
+Its minimim value is 3.<BR>
+When both P3 and P4 are present, with P3 greater or equal to 3 and P4 greater or equal to P3,
+the coupling path length must be in the [P3, P4] range.
+If P4 is equal to 0, the length must be greater to P3.<BR>
+If an <A HREF="#ELIM"><CODE>ELIM</CODE></A> command is present, the highest coupling path length of a correlation
+cannot be greater than the length value that is imposed by the <A HREF="#ELIM"><CODE>ELIM</CODE></A> command <B>+ 1</B>.<BR>
+Examples: 
+<UL>
+<LI> <CODE>COSY 2 9</CODE>: Hydrogen atom 2 correlates with hydrogen atom 9 through 3 bonds.
+<LI> <CODE>COSY (4 6) 9</CODE>: Hydrogen atom 4 or 6 correlates with hydrogen atom 9 through 3 bonds.
+<LI> <CODE>COSY 5 9 3 4</CODE>: Hydrogen atom 5 correlates with hydrogen atom 9 through 3 or 4 bonds.
+This correlation will never be eliminated, even if an <A HREF="#ELIM"><CODE>ELIM</CODE></A> command is present.
+</UL>
+<P></P>
+
+<A NAME = "HMBC"></A>
+<LI><CODE>HMBC</CODE> V I O O: heteronuclear correlation through <B>2 or 3</B> bonds
+<UL [TYPE = CIRCLE]>
+<LI>P1: non hydrogen atom number or a list of them.
+<LI>P2: hydrogen atom number.
+<LI>P3: optional coupling path length, lower limit.
+<LI>P4: optional coupling path length, upper limit.
+</UL>
+The length of the coupling path may be extended if an <A HREF="#ELIM"><CODE>ELIM</CODE></A> command is present.<BR>
+When P3 is the only present optional argument, it defines the only possible coupling path length.
+Its minimim value is 2.<BR>
+When both P3 and P4 are present, with P3 greater or equal to 2 and P4 greater or equal to P3,
+the coupling path length must be in the [P3, P4] range.
+If P4 is equal to 0, the length must be greater to P3.<BR>
+If an <A HREF="#ELIM"><CODE>ELIM</CODE></A> command is present, the highest coupling path length of a correlation
+cannot be greater than the length value that is imposed by the <A HREF="#ELIM"><CODE>ELIM</CODE></A> command.<BR>
+Examples: 
+<UL>
+<LI> <CODE>HMBC 3 8</CODE>: Atom 3 correlates with hydrogen atom 8.
+<LI> <CODE>HMBC (4 5) 8</CODE>: Atom 4 or 5 correlates with hydrogen atom 8.
+<LI> <CODE>HMBC 6 8 2</CODE>: Atom 6 correlates with hydrogen atom 8 through 2 bonds.
+<LI> <CODE>HMBC 6 8 4</CODE>: Atom 6 correlates with hydrogen atom 8 through 4 bonds.
+This is only possible if an <A HREF="#ELIM"><CODE>ELIM</CODE></A> command is present.
+<LI> <CODE>HMBC 6 8 2 3</CODE>: Atom 6 correlates with hydrogen atom 8 through 2 or 3 bonds.
+This correlation will never be eliminated, even if an <A HREF="#ELIM"><CODE>ELIM</CODE></A> command is present.
+</UL>
+The sum of HMBC and COSY correlation numbers is limited to 100.
+<P></P>
+
+<A NAME = "LIST"></A>
+<LI><CODE>LIST</CODE> L<I>n</I> S: defines a list of atoms
+<UL [TYPE = CIRCLE]>
+<LI>P1: list index, <I>n</I> is comprised between 1 and 20.
+<LI>P2: non hydrogen atoms numbers.
+</UL>
+See below for other list definition commands. <BR>
+Example: <CODE>LIST L1 4 6 14</CODE>: The L1 list contains the atoms 4, 6 and 14.
+<P></P>
+
+<A NAME = "PROP"></A>
+<LI><CODE>PROP</CODE> B I L<I>n</I> H: environment of atoms
+<UL [TYPE = CIRCLE]>
+<LI>P1: the atom(s) referenced in P1 have exactly P2 neighbors in P3.
+<LI>P2: exact number of neighbors. The value 0 stands for "all".
+<LI>P3: neighbors list.
+<LI>P4: optional sign (+ or -).
+</UL>
+Examples: 
+<UL>
+<LI> <CODE>PROP L1 0 L2</CODE>: Each atom in L1 has all its neighbors in L2.
+<LI> <CODE>PROP 12 1 L3</CODE>: Atom 12 has exactly 1 neighbor in L3. 
+<LI> <CODE>PROP 12 1 L3 +</CODE>: Atom 12 has 1 or more neighbors in L3. 
+<LI> <CODE>PROP 12 1 L3 -</CODE>: Atom 12 has 1 or less neighbor in L3. 
+<LI> <CODE>PROP 12 0 L3 -</CODE>: Atom 12 has 0 or less (meaning exactly 0) neighbor in L3. 
+</UL>
+<P></P>
+
+<A NAME = "SHIX"></A>
+<LI><CODE>SHIX</CODE> I R: defines chemical shift of non-hydrogen atoms
+<UL [TYPE = CIRCLE]>
+<LI>P1: atom index (atom must be defined by a <CODE>MULT</CODE> command).
+<LI>P2: chemical shift value.
+</UL>
+Example: <CODE>SHIX 1 210.5</CODE>: Chemical shift value of atom 1 is 210.5 ppm.
+<P></P>
+
+<A NAME = "SHIH"></A>
+<LI><CODE>SHIH</CODE> I R: defines chemical shift of hydrogen atoms
+<UL [TYPE = CIRCLE]>
+<LI>P1: hydrogen index (hydrogen must be defined by an <CODE>HSQC</CODE> or <CODE>HMQC</CODE> command).
+<LI>P2: chemical shift value.
+</UL>
+Example: <CODE>SHIH 15 5.4</CODE>: Chemical shift value of hydrogen 15 is 5.4 ppm.
+<P></P>
+
+<A NAME = "EXIT"></A>
+<LI><CODE>EXIT</CODE>: end of data file. (may be omitted)
+<P></P>
+
+</UL>
+</P>
+
+<A NAME = "List definition"></A>
+<H3>List definition</H3>
+<P>
+The commands that are described here help to define the lists of atoms that are
+required by the <A HREF="#PROP"><CODE>PROP</CODE></A> command. <BR>
+They are interpreted in the order in which they are written. <BR>
+They are hereafter sorted according to their number of arguments:
+</P>
+
+<P>
+<UL>
+
+<LI> 1 argument. <BR>
+P1, of type L<I>n</I>, is the reference of the list that is created.
+<UL [TYPE = CIRCLE]>
+<A NAME = "CARB"></A>
+<LI><CODE>CARB</CODE>: carbon atoms.
+<A NAME = "HETE"></A>
+<LI><CODE>HETE</CODE>: non-carbon atoms.
+<A NAME = "SP3"></A>
+<LI><CODE>SP3 </CODE>: atoms with only single bonds
+(<CODE>SP3^</CODE>, with a trailing space).
+<A NAME = "SP2 "></A>
+<LI><CODE>SP2 </CODE>: atoms with exactly one double bond
+(<CODE>SP2^</CODE>).
+<A NAME = "SP  "></A>
+<LI><CODE>SP  </CODE>: atoms with one triple bond or two double bonds
+(<CODE>SP^^</CODE>).
+<A NAME = "FULL"></A>
+<LI><CODE>FULL</CODE>: the full atom list.
+<A NAME = "QUAT"></A>
+<LI><CODE>QUAT</CODE>: carbon atoms bound to 0 hydrogen atom.
+<A NAME = "CH  "></A>
+<LI><CODE>CH  </CODE>: carbon atoms bound to 1 hydrogen atom 
+(<CODE>CH^^</CODE>, with 2 trailing spaces).
+<A NAME = "CH2 "></A>
+<LI><CODE>CH2 </CODE>: carbon atoms bound to 2 hydrogen atoms
+(<CODE>CH2^</CODE>).
+<A NAME = "CH3 "></A>
+<LI><CODE>CH3 </CODE>: carbon atoms bound to 3 hydrogen atoms
+(<CODE>CH3^</CODE>).
+<A NAME = "CHAR"></A>
+<LI><CODE>CHAR</CODE>: charged atoms.
+<A NAME = "CPOS"></A>
+<LI><CODE>CPOS</CODE>: atoms carrying a positive charge.
+<A NAME = "CNEG"></A>
+<LI><CODE>CNEG</CODE>: atoms carrying a negative charge.
+</UL>
+Example: <CODE>CARB L5</CODE>. L5 is the list of all carbon atoms of the molecule.
+<P></P>
+
+<LI> 2 arguments. <BR>
+P1, of type L<I>n</I>, is the reference of the list that is created.
+P2, of type A is an atomic symbol.
+<UL [TYPE = CIRCLE]>
+<A NAME = "ELEM"></A>
+<LI><CODE>ELEM</CODE>: list of all atoms of atomic symbol A.
+</UL>
+Example: <CODE>ELEM L2 N</CODE>. L2 is the list of all N atoms.
+<P></P>
+P1, of type L<I>n</I>, is the reference of the list that is created.
+P2, of type I is an integer, for comparison.
+<UL [TYPE = CIRCLE]>
+<A NAME = "GREQ"></A>
+<LI><CODE>GREQ</CODE>: atoms whose reference is greater than or egal to P2.
+<A NAME = "LEEQ"></A>
+<LI><CODE>LEEQ</CODE>: atoms whose reference is smaller than or egal to P2.
+<A NAME = "GRTH"></A>
+<LI><CODE>GRTH</CODE>: atoms whose reference is strictly greater than P2.
+<A NAME = "LETH"></A>
+<LI><CODE>LETH</CODE>: atoms whose reference is strictly smaller than P2.
+</UL>
+Example: <CODE>GREQ L1 10</CODE>. 
+L1 is the list of all atom references from 10, 10 included.
+<P></P>
+
+<LI> 3 arguments. <BR> 
+P1, of type B, is a list or single atom reference.
+P2, of type B, is a list or single atom reference.
+P3, of type L<I>n</I>, is the reference of the list that is created.
+<UL [TYPE = CIRCLE]>
+<A NAME = "UNIO"></A>
+<LI><CODE>UNIO</CODE>: P3 is the union of P1 and P2.
+<A NAME = "INTE"></A>
+<LI><CODE>INTE</CODE>: P3 is the intersection of P1 and P2.
+<A NAME = "DIFF"></A>
+<LI><CODE>DIFF</CODE>: P3 contains the atoms in P1 not belonging to P2.
+</UL>
+Example: <CODE>UNIO L1 10 L2</CODE>. L2 contains the atoms in L1 and 10.
+<P></P>
+
+</UL>
+</P>
+
+<A NAME = "Execution control"></A>
+<H3>Execution control</H3>
+
+<P>
+<UL>
+
+<A NAME = "ENTR"></A>
+<LI><CODE>ENTR</CODE> I: lists atoms state before problem solving.
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0: no listing (default).
+<LI>P1 = 1: active state.
+</UL>
+<P></P>
+
+<A NAME = "HIST"></A>
+<LI><CODE>HIST</CODE> I: lists the resolution path of the solutions
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0: does nothing (default).
+<LI>P1 = 1: active state.
+</UL>
+<P></P>
+		
+<A NAME = "DISP"></A>
+<LI><CODE>DISP</CODE> I: output format 
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0: produces bond lists.
+<LI>P1 = 1: results are formatted for outlsd (default).
+</UL>
+<P></P>
+
+<A NAME = "VERB"></A>
+<LI><CODE>VERB</CODE> I: verbosity
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0: dummy (default).
+<LI>P1 = 1: active state.
+<LI>P1 = 2: very verbose.
+</UL>
+<P></P>
+
+<A NAME = "PART"></A>
+<LI><CODE>PART</CODE> I: output of uncomplete solutions
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0: no (default).
+<LI>P1 = 1: yes.
+</UL>
+This feature allows the reduction of the number of solutions by grouping them into
+sets presenting common structural fragments generated from correlation analysis. <BR>
+An uncomplete solution is produced by analysis of all correlations but has uncomplete
+atoms. <BR>
+The complete solutions would be produced by systematically pairing the remaining 
+uncomplete atoms. <BR>
+An uncomplete solution can always be completed. 
+<P></P>
+
+<A NAME = "STEP"></A>
+<LI><CODE>STEP</CODE> I: single step operation
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0: nothing (default).
+<LI>P1 = 1: active state.
+</UL>
+An analysis step number is given to check the progression of LSD... <BR>
+The single step mode is not really useful is the absence of true interfaces. <BR>
+It requires <A HREF="#VERB"><CODE>VERB 2</CODE></A>.
+The user is prompted for the action to be taken.
+<P></P>
+
+<A NAME = "WORK"></A>
+<LI><CODE>WORK</CODE> I: search solutions
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0: LSD reads and interpretes the input data only.
+<LI>P1 = 1: active state (default).
+</UL>
+<P></P>
+
+<A NAME = "MLEV"></A>
+<LI><CODE>MLEV</CODE> I: stop analysis at step number P1
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0 (default) : nothing.
+<LI>P1 = usually the step number given by LSD when it fails...
+</UL>
+<P></P>
+
+<A NAME = "DUPL"></A>
+<LI><CODE>DUPL</CODE> I: elimination of duplicate solutions
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0: duplicate structures may be produced.
+<LI>P1 = 1: duplicate solutions are removed.
+<LI>P1 = 2: duplicate structures are removed (default).
+</UL>
+<P></P>
+
+<A NAME = "SUBS"></A>
+<LI><CODE>SUBS</CODE> T: substructure validation
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0: no substructure checking.
+<LI>P1 = 1: accepts structures that validate the substructure constraint (default).
+<LI>P1 = -1: accepts structures that do not validate the substructure constraint.
+</UL>
+<P></P>
+
+<A NAME = "ELIM"></A>
+<LI><CODE>ELIM</CODE> I I: elimination of invalid HMBC and/or COSY correlations
+<UL [TYPE = CIRCLE]>
+<LI>P1: maximum number of eliminated correlations.
+<LI>P2: maximum number of bonds between the atoms in eliminated correlations. <BR>
+The upper limit is P2 for a HMBC correlation
+and <B>P2 + 1 for a COSY correlation</B>. <BR>
+0 means: no limitation.
+</UL>
+Example : <CODE>ELIM 3 5</CODE>. 3 HMBC and/or COSY correlations, at most, can be eliminated.
+Each HMBC eliminated correlation is mediated through a
+<SUP>4</SUP><I>J</I> coupling (mandatory lower limited) or a <SUP>5</SUP><I>J</I>
+coupling (proposed upper limit).
+In the case of a COSY correlation, the interval is from
+<SUP>5</SUP>J (mandatory lower limit) 
+to <SUP>6</SUP>J (proposed upper limit).
+<P></P>
+
+<A NAME = "FILT"></A>
+<LI><CODE>FILT</CODE> I: substructure filtering mode selection
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0: normal use of LSD (default).
+<LI>P1 = 1: activates filer mode.
+</UL>
+In filter mode, LSD uses <A HREF="#VALE"><CODE>VALE</CODE></A>, <A HREF="#MULT"><CODE>MULT</CODE></A>, 
+<A HREF="#BOND"><CODE>BOND</CODE></A>
+and sub-structure related commands to search for the presence of the latter
+in the structure.
+Typical call of LSD in this context is "lsd < file > &>/dev/null".
+The returned value is :
+<UL [TYPE = CIRCLE]>
+<LI>-1: invalid data.
+<LI> 0: substructure not found.
+<LI> 1: substructure found.
+</UL>
+This feature is intended to be used within a shell script
+or in any context in which the returned value can be read.
+<P></P>
+
+<A NAME = "CNTD"></A>
+<LI><CODE>CNTD</CODE> I: elimination of non-connected solutions
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0: no checking.
+<LI>P1 = 1: only connected solutions are produced (default).
+</UL>
+<P></P>
+
+<A NAME = "MAXS"></A>
+<LI><CODE>MAXS</CODE> I: limits the number of produced solutions
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0: no checking (default).
+<LI>P1 > 0: execution stopped after P1 solutions.
+</UL>
+<P></P>
+
+<A NAME = "MAXT"></A>
+<LI><CODE>MAXT</CODE> I: limits the resolution time
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0: no checking (default).
+<LI>P1 > 0: execution stopped after P1 seconds.
+</UL>
+<P></P>
+
+<A NAME = "CCLA"></A>
+<LI><CODE>CCLA</CODE> I: controls the use of C atom equivalence classes
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0: no classes. All <SUP>13</SUP>C assignments are generated (default).
+<LI>P1 = 1: Initially non-bonded non-correlating C atoms are equivalent.
+</UL>
+<P></P>
+
+<A NAME = "COUF"></A>
+<LI><CODE>COUF</CODE> C: sets the path to the solution counter file
+<UL [TYPE = CIRCLE]>
+<LI>P1: path to the solution counter file (default: solncounter).
+</UL>
+The solution counter file contains a single line with the number of presently found solutions.
+<P></P>
+
+<A NAME = "STOF"></A>
+<LI><CODE>STOF</CODE> C: sets the path to the lsd stop file
+<UL [TYPE = CIRCLE]>
+<LI>P1: path to the lsd stop file (default: stoplsd).
+</UL>
+If a solution stop file is created while lsd is running, then lsd is stopped.
+<P></P>
+
+<A NAME = "BRUL"></A>
+<LI><CODE>BRUL</CODE> I: test for anti-Bredt structure
+<UL [TYPE = CIRCLE]>
+<LI>P1 = 0: no checking.
+<LI>P1 = 1: anti-Bredt structures are excluded (default).
+</UL>
+<P></P>
+
+</UL>
+
+
+<A NAME = "Substructural information"></A>
+<H3>Substructural information</H3>
+<P>
+Solutions found by LSD after correlation analysis and uncomplete atom pairing
+can be selected according to a substructure constraint. <BR>
+The substructure constraint is provided by substructure
+definitions and by the way they are combined.<BR>
+A substructure is either native (defined in the problem input file,
+as it was before version 3.2.0), or externally defined.<BR>
+The Data/pinene file contains an example of substructural constraint coding.
+</P>
+
+<P>
+A substructure is a set of sub-atoms (<A HREF="#SSTR"><CODE>SSTR</CODE></A> commands) that
+are connected by sub-bonds (<A HREF="#LINK"><CODE>LINK</CODE></A> commands) and
+eventually pre-assigned (<A HREF="#ASGN"><CODE>ASGN</CODE></A> commands).
+</P>
+
+<P>
+<UL>
+
+<A NAME = "SSTR"></A>
+<LI><CODE>SSTR</CODE> S<I>n</I> A V V: sub-atom status
+<UL [TYPE = CIRCLE]>
+<LI>P1: sub-atom number.
+<LI>P2: sub-atom symbol.
+<LI>P3: hybridization state, 
+<CODE>1</CODE> (sp), <CODE>2</CODE> (sp<SUP>2</SUP>) or <CODE>3</CODE> (sp<SUP>3</SUP>) 
+or <CODE>(2 3)</CODE> (both) or <CODE>(1 2 3)</CODE> (both).
+<LI>P4: multiplicity.
+</UL>
+Example: <CODE>SSTR S1 C (2 3) (0 1 2)</CODE>. Atom 1 of the substructure is a carbon,
+either sp<SUP>2</SUP> or sp<SUP>3</SUP>, with possibly 0, 1 or 2 hydrogen atoms. <BR>
+There is no a priori relationship between atom and sub-atom numbering. <BR>
+P2 may also be "A", which means "Any". <BR>
+A-type sub-atoms can match any atom of the structure.<BR>
+The number of sub-atoms is limited to 60.
+<P></P>
+
+<A NAME = "LINK"></A>
+<LI><CODE>LINK</CODE> S<I>n</I> S<I>n</I>: bond within the substructure.
+<UL [TYPE = CIRCLE]>
+<LI>P1: first sub-atom of the bond.
+<LI>P2: second sub-atom of the bond.
+</UL>
+Example: <CODE>LINK S1 S2</CODE>. Sub-atoms 1 and 2 are chemically bound. <BR>
+The number of bonds between sub-atoms is limited to 60.
+<P></P>
+
+<A NAME = "ASGN"></A>
+<LI><CODE>ASGN</CODE> S<I>n</I> I: assignment of a sub-atom.
+<UL [TYPE = CIRCLE]>
+<LI>P1: sub-atom number.
+<LI>P2: number of the corresponding atom.
+</UL>
+Example: <CODE>ASGN S3 5</CODE>. Sub-atom 3 is identified as being atom 5.
+<P></P>
+
+</UL>
+</P>
+
+<P>
+An external substructure is referred to by a fragment number
+and the path to the file that contains its definition.
+The latter is coded exactly in the same way as it is for a
+native substructure.
+</P>
+
+<P>
+<UL>
+
+<A NAME = "DEFF"></A>
+<LI><CODE>DEFF</CODE> F<I>n</I> C: define fragment from its file name.
+<UL [TYPE = CIRCLE]>
+<LI>P1: fragment number, greater of equal to 1.
+<LI>P2: path to the fragment.
+</UL>
+Example: <CODE>DEFF F3 "Filters/ring3"</CODE>. 
+Fragment F3 is a generic 3-membered ring.
+<P></P>
+
+<A NAME = "SKEL"></A>
+<LI><CODE>SKEL</CODE> F<I>n</I>C : define fragment from its skeleton name.
+<UL [TYPE = CIRCLE]>
+<LI>P1: fragment number, greater of equal to 1.
+<LI>P2: skeleton name. <A HREF="#Substructure databases">Details here</A>
+</UL>
+Example: <CODE>SKEL F4 "PINANE"</CODE>. 
+Fragment F4 is the pinane skeleton. <BR>
+From version 3.4.1 included, this command is not mandatory.
+An external substructure could be referred to directly by the skeleton name without using a fragment number.
+<P></P>
+
+<A NAME = "PATH"></A>
+<LI><CODE>PATH</CODE> C: defines where to search for skeletons.
+<UL [TYPE = CIRCLE]>
+<LI>P1: path to skeleton database. <A HREF="#Substructure databases">Details here</A>
+</UL>
+Example: <CODE>PATH "Filters/TERPENES/MONOTERP"</CODE>. 
+Adds Filters/TERPENES/MONOTERP to the list of places in which skeleton definition files will be searched for.
+<P></P>
+</UL>
+</P>
+
+<P>
+Results of substructure searches are combined together to
+determine the validity of the current structure:
+</P>
+
+<P>
+<UL>
+
+<A NAME = "FEXP"></A>
+<LI><CODE>FEXP</CODE> C: fragment (logical) expression.
+<UL [TYPE = CIRCLE]>
+<LI>P1: logical expression that combines fragment search results.<BR>
+In this expression, fragments are each defined by a number preceded by "F"
+or directly by a skeleton name between two backquotes "`" (only possible from version 3.4.1 included). <BR>
+If the P1 character string starts with the ">" sign, the 
+characters that follow it are interpreted as a file name.
+The content of this file is a
+logical expression that combines fragment search results.<BR>
+The fragment definitions are connected together by the <CODE>NOT</CODE>, <CODE>AND</CODE>
+and <CODE>OR</CODE> operators, given here in decreasing order of precedence.
+Precedence order may be changed by means of parenthesis.
+</UL>
+Examples:
+<UL [TYPE = CIRCLE]>
+<LI><CODE>FEXP "NOT F1 AND F2"</CODE>. Is equivalent to <CODE>FEXP "(NOT F1) AND F2"</CODE>.<BR>
+<LI><CODE>FEXP "F1 AND F2 OR F3"</CODE>. Is equivalent to <CODE>FEXP "(F1 AND F2) OR F3"</CODE>.<BR>
+<LI><CODE>FEXP "`LABDANE` OR `CLERODANE`</CODE>.<BR>
+</UL>
+<P></P>
+
+</UL>
+</P>
+
+<P>
+The <A HREF="#DEFF"><CODE>DEFF</CODE></A>, <A HREF="#SKEL"><CODE>SKEL</CODE></A>, 
+<A HREF="#PATH"><CODE>PATH</CODE></A>, and <A HREF="#FEXP"><CODE>FEXP</CODE></A>
+commands implement in LSD the functionnality of solution filtering.<BR>
+In the absence of <A HREF="#FEXP"><CODE>FEXP</CODE></A> and
+<A HREF="#SKEL"><CODE>SKEL</CODE></A> commands, the native
+substructure is taken into account, if it exists.<BR>
+If a <A HREF="#FEXP"><CODE>FEXP</CODE></A> or <A HREF="#SKEL"><CODE>SKEL</CODE></A>
+command is present, the native substructure
+is accessed to via <CODE>F0</CODE> as if a <CODE>DEFF F0 "..."</CODE>
+existed.
+If no native substructure is defined, <CODE>F0</CODE> is the
+empty substructure, the one that always matches a structure.<BR>
+If the parameter of <A HREF="#SUBS"><CODE>SUBS</CODE></A> is 0, 
+no substructure search at all is performed.
+If it is -1, the result of the evaluation of the logical expression
+that is provided by the <A HREF="#FEXP"><CODE>FEXP</CODE></A> command is inverted.
+</P>
+
+<A NAME = "Substructure databases"></A>
+<P>
+The <A HREF="#SKEL"><CODE>SKEL</CODE></A> command associates a fragment number 
+(see <A HREF="#DEFF"><CODE>DEFF</CODE></A>)
+with a SKELeton name, a name like PINANE that refers to a substructure that fits with pinene
+and with many other natural compounds.<BR>
+LSD searches in a user provided sketelon database for a file that describes that skeleton.
+The fragment number is then associated with the file path that leads to the 
+corresponding LSD substructure file.<BR>
+The default location of the skeleton database is the Filters directory
+that comes with the other LSD files.
+A <A HREF="#PATH"><CODE>PATH</CODE></A> command replaces the default location of the skeleton database
+by a new one. Subsequent <CODE>PATH</CODE> commands define alternative locations
+in which skeletons can also be found.<BR>
+Each time a <A HREF="#SKEL"><CODE>SKEL</CODE></A> command is processed all
+the defined skeleton database directories
+are explored and all their embedded sub-directories as well.
+Each time a file named toc (Table of Contents) is found during this exploration,
+its contents is scanned.
+If the searched skeleton name is found at line <I>n</I> of a toc file, then a file named file<I>n</I>
+must exist in the same directory and should be the substructure description file
+that corresponds to the desired skeleton.<BR>
+The <A HREF="#PATH"><CODE>PATH</CODE></A> command has no influence on the behavior
+of the <A HREF="#DEFF"><CODE>DEFF</CODE></A> command.
+A toc file must only contain a single skeleton name per line, a name must not contain
+a separation character such as a blank or a tab.<BR>
+A converter named <A HREF="#Creating substructure files with mol2ab">mol2ab</A> 
+is available to help users translate MDL .mol files into LSD substructure description files.<BR>
+</P>
+
+<P>
+LSD comes with a non-exhaustive collection
+of natural product <A HREF="SKELETON_ENG.html">skeletons</A>.
+They are provided as MDL .mol files in the MOL directory so that users could 
+create LSD substructure files at their own convenience 
+using <A HREF="#Creating substructure files with mol2ab">mol2ab</A>. 
+The result of the conversion of all files in the MOL directory is
+stored in Filters/TERPENES directory.
+</P>
+
+<A NAME = "Creating substructure files with mol2ab"></A>
+<H2>Creating substructure files with mol2ab</H2>
+<P>
+The mol2ab program converts structures in .mol format into substructures for LSD.<BR>
+Users can convert the .mol files that are supplied with LSD or their personal files, 
+produced by any chemical structure drawing program.<BR>
+The following rules apply to the conversion process:
+</P>
+
+<P>
+<UL>
+<LI>Any hydrogen atom from the structure may be abstracted
+<LI>Any single bond may be converted to a double bond
+<LI>Any double bond may be converted to a triple bond
+<LI>A triple bond remains a triple bond
+<LI>The atomic element names are preserved
+</UL>
+</P>
+
+<P>
+Usage: <BR>
+<CODE><FONT COLOR = #FF00FF> prompt$ </FONT> mol2ab Directory pilot-file</CODE>
+</P>
+
+<P>
+The pilot-file must contain lines with two fields:
+<UL>
+<LI>first field is the skeleton name that will be associated to the .mol file
+<LI>second field is a .mol file name that must exist in the current directory
+</UL>
+The Directory must exist and should be empty. 
+It will be filled with the initial .mol files (renamed file1.mol ... file<I>n</I>.mol) and 
+their equivalent LSD files (file1 ... file<I>n</I>) if <I>n</I> is the number of lines in the pilot file.<BR>
+A toc file is also created so that LSD can retrieve substructure files from skeleton names.
+</P>
+<P>
+
+<P>
+Example: The making of Filters/MONOTERP.<BR>
+The following commands are written for UNIX-like systems.<BR>
+The current directory of the command interpreter is initially the one of LSD.<BR>
+For Windows, the <CODE>/</CODE>s must by replaced by <CODE>\</CODE>s.<BR>
+<PRE CLASS="CODE">
+<FONT COLOR = #FF00FF> prompt$ </FONT> cd MOL
+<FONT COLOR = #FF00FF> prompt$ </FONT> cd Monoterp_mol
+<FONT COLOR = #FF00FF> prompt$ </FONT> mkdir MONOTERP
+<FONT COLOR = #FF00FF> prompt$ </FONT> ../../mol2ab MONOTERP ../monoterp_mol.txt
+</PRE>
+</P>
+
+<A NAME = "Result processing with outlsd"></A>
+<H2>Result processing with outlsd</H2>
+<P>
+In order to use outlsd, LSD <B>must</B> not be run with <A HREF="#DISP"><CODE>DISP 0</CODE></A>.<BR>
+The outlsd program reads from and writes to standard devices. <BR>
+It takes an integer <I>n</I> comprised between 1 and 10 as argument.
+</P>
+
+<P>
+<CODE><FONT COLOR = #FF00FF> prompt$ </FONT> outlsd 7 < pinene.sol > pinene.sdf</CODE>
+</P>
+
+<P>
+Depending on <I>n</I>, the result contains
+</P>
+
+<P>
+<UL>
+
+<LI><I>n</I> = 1: bond lists (no real interest)
+<LI><I>n</I> = 5: SMILES chains
+<LI><I>n</I> = 6: 2D coordinates for 
+<A HREF = "#Result viewing with genpos">genpos</A> and 
+<A HREF = "#Drawing improvement">m_edit</A> (.coo extension)
+<LI><I>n</I> = 7: 2D SDF format (.sdf extension) for some commercial
+products and <A HREF = "#Drawing improvement">m_edit</A>
+<LI><I>n</I> = 8: 3D SDF format (.sdf extension) with fancy 3D coordinates, no H atoms
+<LI><I>n</I> = 9: 3D SDF format (.sdf extension) with fancy 3D coordinates, explicit H atoms
+<LI><I>n</I> = 10: 0D SDF format (.sdf extension) without any 3D coordinates, no H atoms
+
+</UL>
+</P>
+
+<P>
+Options 2, 3 and 4 are not available anymore, starting from version 3.4.1.
+</P>
+
+<A NAME = "Result viewing with genpos"></A>
+<H2>Result viewing with genpos</H2>
+<P>
+The option 6 of outlsd produces an output that starts with the magic word DRAW,
+in a format suitable for its treatment by the genpos program.
+genpos reads and writes from standard devices and generates PostScript
+instructions.
+</P>
+
+<P>
+<CODE><FONT COLOR = #FF00FF> prompt$ </FONT> genpos < pinene.coo > pinene.ps</CODE>
+</P>
+
+<P>
+The resulting file can be opened by Postscript previewers 
+or be sent to Postscript printers.
+</P>
+
+<P>
+<I>Copyright(C)2000 CNRS-UMR 7312-Jean-Marc Nuzillard</I>
+</P>
+
+</BODY>
+</HTML>
+ 

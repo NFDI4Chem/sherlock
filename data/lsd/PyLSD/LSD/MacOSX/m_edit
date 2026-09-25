@@ -1,0 +1,5 @@
+#!/bin/sh
+# Uncomment a line, depending on the location of your wish executable file
+wish m_edit.tcl $*
+# "/Applications/Utilities/Wish 8.5.app/Contents/MacOS/Wish" m_edit.tcl $*
+

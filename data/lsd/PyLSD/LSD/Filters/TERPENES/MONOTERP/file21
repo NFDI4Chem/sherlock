@@ -1,0 +1,24 @@
+; Coded from file: b-cyclolavandulane.mol
+; Skeleton: B-CYCLOLAVANDULANE
+
+SSTR S1 C 3 0
+SSTR S2 C (1 2 3) (0 1 2)
+SSTR S3 C (1 2 3) (0 1 2)
+SSTR S4 C (2 3) (0 1)
+SSTR S5 C (2 3) (0 1)
+SSTR S6 C (1 2 3) (0 1 2)
+SSTR S7 C (1 2 3) (0 1 2 3)
+SSTR S8 C (1 2 3) (0 1 2 3)
+SSTR S9 C (1 2 3) (0 1 2 3)
+SSTR S10 C (1 2 3) (0 1 2 3)
+
+LINK S1 S7
+LINK S1 S8
+LINK S5 S10
+LINK S2 S3
+LINK S3 S4
+LINK S1 S2
+LINK S1 S6
+LINK S5 S6
+LINK S4 S5
+LINK S4 S9
