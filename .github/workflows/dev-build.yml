@@ -43,16 +43,6 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v4
 
-      # Fetch PyLSD and stage it to right folder
-      - name: Fetch PyLSD
-        run: |
-          curl -sL -o pylsd.tar.gz "https://raw.githubusercontent.com/nuzillard/PyLSD/4db027118acf3d9c77d3a5f8dc9ce51dd3cbd468/pylsd-linux-a8.tar.gz"
-          tar -xzf pylsd.tar.gz -C data/lsd
-          mv data/lsd/PyLSD-a8 data/lsd/PyLSD
-          cp data/lsd/PyLSD_Variant_mod/defaults.py data/lsd/PyLSD/Variant/defaults.py
-          cp data/lsd/PyLSD_Variant_mod/lsd.py data/lsd/PyLSD/Variant/lsd.py
-          rm pylsd.tar.gz
-
       # Enable multi-architecture builds via QEMU emulation
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
