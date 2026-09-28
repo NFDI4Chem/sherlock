@@ -3,7 +3,7 @@
 # Define variables
 PROJECT_DIR="/mnt/data/sherlock"
 COMPOSE_FILE="docker-compose.yml"
-SHERLOCK_IMAGE="nfdi4chem/sherlock:latest"
+SHERLOCK_IMAGE="nfdi4chem/sherlock:dev"
 LOG_FILE="/var/log/sherlock-deploy.log"
 LOG_OWNER="${SUDO_USER:-$(whoami)}"
 
