@@ -60,6 +60,9 @@ public class CoreController {
         @Value("${sherlock.url}")
         private String sherlockUrl;
 
+        @Value("${server.servlet.context-path}")
+        private String contextPath;
+
         @Value("${springdoc.api-docs.path}")
         private String springdocApiDocsPath;
 
@@ -96,12 +99,31 @@ public class CoreController {
         public Mono<ResponseEntity<Map<String, Object>>> root() {
                 return this.systemStatusController.status()
                                 .map(statusResponse -> {
+                                        // Remove trailing slash from Sherlock URL if present
+                                        String _sherlockUrl = sherlockUrl.endsWith("/")
+                                                        ? sherlockUrl.substring(0, sherlockUrl.length() - 1)
+                                                        : sherlockUrl;
+                                        // Add the context path to the Sherlock URL
+                                        _sherlockUrl = _sherlockUrl + (contextPath.startsWith("/") ? contextPath
+                                                        : "/" + contextPath);
+                                        // Remove trailing slash from Sherlock URL if present, assuming the paths to the
+                                        // OpenAPI and Swagger UI documentation contain a leading slash
+                                        _sherlockUrl = _sherlockUrl.endsWith("/")
+                                                        ? _sherlockUrl.substring(0, _sherlockUrl.length() - 1)
+                                                        : _sherlockUrl;
+                                        final String _springDocApiDocsPath = springdocApiDocsPath.startsWith("/")
+                                                        ? springdocApiDocsPath
+                                                        : "/" + springdocApiDocsPath;
+                                        final String _springDocSwaggerUiPath = springdocSwaggerUiPath.startsWith("/")
+                                                        ? springdocSwaggerUiPath
+                                                        : "/" + springdocSwaggerUiPath;
+
                                         final Map<String, Object> body = new LinkedHashMap<>();
                                         body.put("message", "Welcome to the Sherlock backend services!");
+                                        body.put("github", "https://github.com/nfdi4chem/sherlock");
                                         body.put("version", sherlockVersion);
-                                        body.put("github", "https://github.com/michaelwenk/sherlock");
-                                        body.put("openApi", sherlockUrl + springdocApiDocsPath);
-                                        body.put("swaggerUi", sherlockUrl + springdocSwaggerUiPath);
+                                        body.put("openApi", _sherlockUrl + _springDocApiDocsPath);
+                                        body.put("swaggerUi", _sherlockUrl + _springDocSwaggerUiPath);
 
                                         final Map<String, Object> statusBody = statusResponse.getBody();
                                         if (statusBody != null) {

@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
     image: nfdi4chem/sherlock:dev
     ports:
-      - "${PORT:-8080}:8080"
+      - "8080:8080"
     depends_on:
       - sherlock-db-mongo
       - sherlock-db-postgres
